@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,12 +11,14 @@ module.exports = {
   preset: 'jest-config-carbon',
   collectCoverageFrom: [
     'packages/**/src/**/*.js',
-    '!packages/{cli,components,sketch}/**',
+    'packages/**/src/**/*.tsx',
+    '!packages/{cli,components}/**',
     '!packages/**/{examples,stories}/**',
     '!**/*-story.js',
     '!**/*.stories.js',
     '!**/*-test.e2e.js',
   ],
+  transformIgnorePatterns: ['<rootDir>/node_modules/(?!lodash-es)'],
   moduleNameMapper: {
     // This is a temporary workaround from moving to Jest v28. In this update,
     // certain dependencies are only providing ESM through exports and so we use

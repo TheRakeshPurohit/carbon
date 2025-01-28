@@ -1,4 +1,9 @@
-import { Story, Props, Source, Preview } from '@storybook/addon-docs';
+import { Story, ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as TileStories from './Tile.stories';
+import * as TileFeatureFlagStories from './Tile.featureflag.stories';
+import { stackblitzPrefillConfig } from '../../../previewer/codePreviewer';
+
+<Meta isTemplate />
 
 # Tile
 
@@ -12,49 +17,140 @@ import { Story, Props, Source, Preview } from '@storybook/addon-docs';
 
 ## Overview
 
-<Preview>
-  <Story id="components-tile--default" />
-</Preview>
+<Canvas
+  of={TileStories.Default}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(TileStories.Default),
+    },
+  ]}
+/>
 
 ## Clickable
 
-<Preview>
-  <Story id="components-tile--clickable" />
-</Preview>
+<Canvas
+  of={TileStories.Clickable}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(TileStories.Clickable),
+    },
+  ]}
+/>
 
 ## Expandable
 
-<Preview>
-  <Story id="components-tile--expandable" />
-</Preview>
+<Canvas
+  of={TileStories.Expandable}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(TileStories.Expandable),
+    },
+  ]}
+/>
 
-## Expandable with Tnteractive
+## Expandable with Interactive
 
-<Preview>
-  <Story id="components-tile--expandable-with-interactive" />
-</Preview>
+<Canvas
+  of={TileStories.ExpandableWithInteractive}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () =>
+        stackblitzPrefillConfig(TileStories.ExpandableWithInteractive),
+    },
+  ]}
+/>
 
 ## Multi Select
 
-<Preview>
-  <Story id="components-tile--selectable" />
-</Preview>
+<Canvas
+  of={TileStories.Selectable}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(TileStories.Selectable),
+    },
+  ]}
+/>
 
 ## Multi Select
 
-<Preview>
-  <Story id="components-tile--multi-select" />
-</Preview>
+<Canvas
+  of={TileStories.MultiSelect}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(TileStories.MultiSelect),
+    },
+  ]}
+/>
 
 ## Radio
 
-<Preview>
-  <Story id="components-tile--radio" />
-</Preview>
+<Canvas
+  of={TileStories.Radio}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(TileStories.Radio),
+    },
+  ]}
+/>
+
+## Experimental Improved Contrast
+
+In Sass, you can enable the improved contrast tiles via a feature flag.
+
+```scss
+@include feature-flags.enable('enable-experimental-tile-contrast');
+```
+
+or if you have multiple feature flags you can enable them this way.
+
+```scss
+@use '@carbon/react/scss/feature-flags' with (
+  $feature-flags: (
+    'enable-experimental-tile-contrast': true,
+  )
+);
+```
+
+<Canvas>
+  <div style={{ width: '1018px', maxWidth: '100%' }}>
+    <Canvas
+      of={TileFeatureFlagStories.Clickable}
+      meta={TileFeatureFlagStories}
+    />
+  </div>
+  <div style={{ width: '1018px', maxWidth: '100%' }}>
+    <Canvas
+      of={TileFeatureFlagStories.Expandable}
+      meta={TileFeatureFlagStories}
+    />
+  </div>
+  <div style={{ width: '1018px', maxWidth: '100%' }}>
+    <Canvas
+      of={TileFeatureFlagStories.MultiSelect}
+      meta={TileFeatureFlagStories}
+    />
+  </div>
+  <div style={{ width: '1018px', maxWidth: '100%' }}>
+    <Canvas of={TileFeatureFlagStories.Radio} meta={TileFeatureFlagStories} />
+  </div>
+  <div style={{ width: '1018px', maxWidth: '100%' }}>
+    <Canvas
+      of={TileFeatureFlagStories.Selectable}
+      meta={TileFeatureFlagStories}
+    />
+  </div>
+</Canvas>
 
 ## Component API
 
-<Props />
+<ArgTypes />
 
 ## Feedback
 

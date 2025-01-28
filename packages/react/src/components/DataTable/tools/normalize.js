@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -45,7 +45,7 @@ const normalize = (rows, headers, prevState = {}) => {
       rowsById[row.id].isExpanded = prevRowsByIds[row.id].isExpanded;
     }
 
-    headers.forEach(({ key }, i) => {
+    headers.forEach(({ key, slug, decorator }, i) => {
       const id = getCellId(row.id, key);
       // Initialize the cell info and state values, namely for editing
       cellsById[id] = {
@@ -55,6 +55,9 @@ const normalize = (rows, headers, prevState = {}) => {
         isEditing: false,
         isValid: true,
         errors: null,
+        hasAILabelHeader: !!(
+          slug || decorator?.type?.displayName === 'AILabel'
+        ),
         info: {
           header: key,
         },

@@ -64,6 +64,9 @@ row before the </tbody></table> line.
 - [React](#react)
   - [Guidelines](#guidelines)
     - [Writing a component](#writing-a-component)
+      - [When to use `React.ForwardRef`](#when-to-use-reactforwardref)
+    - [Class names, `data-testid` attributes, and `...rest`](#class-names-data-testid-attributes-and-rest)
+    - [Authoring dynamic/inline styles](#authoring-dynamicinline-styles)
     - [Translating a component](#translating-a-component)
       - [Working with messages that depend on state](#working-with-messages-that-depend-on-state)
     - [Using `useCallback` and `useMemo`](#using-usecallback-and-usememo)
@@ -72,6 +75,15 @@ row before the </tbody></table> line.
   - [Style](#style-1)
     - [Naming event handlers](#naming-event-handlers)
     - [Naming experimental code](#naming-experimental-code)
+  - [Testing](#testing)
+    - [Strategy](#strategy)
+    - [Organization](#organization)
+    - [Stable selectors](#stable-selectors)
+    - [Recipes](#recipes)
+      - [`ComponentName-test.js`](#componentname-testjs)
+      - [`ComponentName-test.a11y.js`](#componentname-testa11yjs)
+      - [`ComponentName-test.server.js`](#componentname-testserverjs)
+      - [Notes on manual testing](#notes-on-manual-testing)
 - [Sass](#sass)
   - [Guidelines](#guidelines-1)
     - [Author component styles using mixins](#author-component-styles-using-mixins)
@@ -82,6 +94,9 @@ row before the </tbody></table> line.
     - [Annotate relevant Sass values with SassDoc](#annotate-relevant-sass-values-with-sassdoc)
   - [Style](#style-2)
     - [Comments](#comments)
+  - [Testing](#testing-1)
+    - [Recipes](#recipes-1)
+      - [Public API](#public-api)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- prettier-ignore-end -->
@@ -224,6 +239,122 @@ _Note: not every component will mirror the structure above. Some will need to
 incorporate `useEffect`, some will not. You can think of the outline above as
 slots that you can fill if you need this functionality in a component._
 
+##### When to use `React.ForwardRef`
+
+From the [react docs](https://reactjs.org/docs/forwarding-refs.html),
+
+> Ref forwarding is an opt-in feature that lets some components take a ref they
+> receive, and pass it further down (in other words, “forward” it) to a child.
+
+For the most part, components should utilize `React.ForwardRef` so that
+consumers can impact or control the managing of focus, selection, or animations.
+
+Cases where a component _may not_ need to forward a ref include components that
+render static content or do not render elements that are focusable, interactive,
+or animatable.
+
+Note that adding a forwarded ref to a component should be considered a breaking
+change. When creating a new component, even if you do not anticipate an explicit
+need to provide a forwarded ref, it's likely still worthwhile to include one to
+avoid unecessary breaking changes in the future.
+
+#### `className`, `data-testid`, and `...rest`
+
+Where possible, the following should be placed on the outermost, parent, or root
+element within a component:
+
+- The `className` prop
+- Additional props spread via `...rest`
+- `data-testid` attributes
+
+```jsx
+function MyComponent({ className, ...rest }) {
+  return (
+    <div className={className} {...rest}>
+      <div>
+        <div></div>
+      </div>
+    </div>
+  );
+}
+```
+
+The location and placement of what elements these props are placed on should be
+stable across major, minor, and patch versions. This may not always be possible,
+but movement of any of these to different elements should ideally only happen
+within a major version change. In some rare cases to fix critical bugs we can
+consider moving placement in a minor version, but we'll need to be highly
+communicative of the change on all of our support channels. Consumers rely on
+the placement of these within the DOM and any changes can cause tests,
+functionality, and custom styling to break within consuming applications.
+
+##### Stable selectors
+
+We also support the placement of `data-testid` attributes on components as a
+"stable selector" for locating elements for testing when
+[all other options](https://testing-library.com/docs/queries/about#priority) are
+exhausted. The location and placement of these in the DOM should remain stable
+between versions. This can be accomplished by explicitly placing this prop on
+the outermost element, or it can be accomplished by having `...rest` spread on
+the outermost element.
+
+In some cases `...rest` can not be spread on the outermost element and needs to
+be spread on other key interior elements, such as inputs. For these cases we
+cannot rely on `data-testid` being included in `...rest` and it must explicitly
+be applied to the outermost element.
+
+```jsx
+function MyComponent({ className, ...rest }) {
+  return (
+    <div className={className} data-testid={rest['data-testid']}>
+      <div>
+        <input {...rest} />
+      </div>
+    </div>
+  );
+}
+```
+
+**We highly encourage consuming applications to _avoid using `data-testid`
+unless absolutely necessary_ and instead use more stable
+[relative queries focused on accessible roles](https://testing-library.com/docs/queries/about#priority)
+or HTML5 and ARIA semantics for selecting elements for testing.**
+
+#### Authoring dynamic/inline styles
+
+It's increasingly common for applications to use a Content Security Policy (CSP)
+header with a
+[`style-src` directive](https://content-security-policy.com/style-src/). When
+this is configured, inline styles are blocked. Due to this, `style={{}}` can not
+be used on any element within the codebase. The `react/forbid-component-props`
+eslint rule is configured to flag invalid usages of the `style` attribute/prop.
+
+Components that need dynamic or inline styles can author these via the
+[CSS Object Model (CSSOM)](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Object_Model).
+Dynamic styles can be set via individual properties on the
+[`CSSStyleDeclaration`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration)
+interface object provided to
+[`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement).
+This will usually need to be wrapped in a `useIsomorphicEffect` hook to ensure
+compatibility between SSR and browser environments and also to ensure the value
+is unset if not provided.
+
+```jsx
+function MyComponent({ width }) {
+  const ref = useRef();
+
+  useIsomorphicEffect(() => {
+    if (width) {
+      ref.current.style.width = `${width}px`;
+    } else {
+      ref.current.style.width = null;
+    }
+  }, [width]);
+
+  return <div ref={ref} />;
+}
+```
+
 #### Translating a component
 
 Certain components will need to expose a way for the caller to pass in
@@ -308,10 +439,12 @@ function MyComponent({ translateWithId: t = translateWithId }) {
 
   return (
     <>
-      <span>The current count is:
-      {t('carbon.component-name.display-count'), translationState}</span>
+      <span>
+        The current count is:
+        {t('carbon.component-name.display-count', translationState)}
+      </span>
       <button onClick={() => updateCount(count + 1)}>
-        {t('carbon.component-name.increment-count')}</span>
+        {t('carbon.component-name.increment-count')}
       </button>
     </>
   );
@@ -729,6 +862,41 @@ this project:
 - [Layout](../packages/layout/docs/sass.md)
 - [Motion](../packages/motion/docs/sass.md)
 - [Type](../packages/type/docs/sass.md)
+
+##### Avoid magic numbers
+
+In addition to using design tokens where appropriate, when authoring values for
+margin, padding, size, or similar, avoid using
+[magic numbers](https://csswizardry.com/2012/11/code-smells-in-css/#magic-numbers).
+
+> "A magic number is a value that is used ‘because it just works’."
+
+Magic numbers should be replaced with a value derived from its discrete parts
+that have been added together or combined. For example:
+
+![text-input-style-structure-fixed](https://github.com/carbon-design-system/carbon/assets/3360588/71e4222e-ff96-4dce-b80f-a0626f47cf21)
+
+If we were trying to apply a `padding-inline-end` to the input to ensure the
+input text does not flow behind the icon, we could add up the individual parts
+of this that use spacing tokens, contextual layout tokens, or other
+constants/variables within the system that will inherently explain what the
+final number is composed of.
+
+```diff
+- padding-inline-end: to-rem(32px);
++ padding-inline-end: calc(layout.density('padding-inline') + $icon-size-01);
+```
+
+When crafting these combinations, avoid creating file-local constants/variables,
+especially if they are never reused. Instead:
+
+1. Check the reusable/global constants for an appropriate one given what is
+   trying to be accomplished.
+2. If one exists, use it. If not, start a conversation with the team as to why
+   no such value currently exists (perhaps challenge the way it was intended to
+   be used in the first place).
+3. Decide to either introduce a new constant to meet the need; or rework the
+   code in question to use other constants (or perhaps none at all).
 
 #### Avoid nesting selectors
 

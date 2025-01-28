@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,23 +14,24 @@ export default {
   title: 'Elements/Icons',
 };
 
-export const Default = () => {
+export const Default = (args) => {
   return (
-    <>
-      <section className="demo-icon-example">
-        <h2>16 pixel (default)</h2>
-        <Bee />
-      </section>
-
-      <section className="demo-icon-example">
-        <h2>20 pixel</h2>
-        <Bicycle size={20} />
-      </section>
-
-      <section className="demo-icon-example">
-        <h2>32 pixel</h2>
-        <ChevronUp size={32} />
-      </section>
-    </>
+    <section className="demo-icon-example">
+      <h2>
+        {args.size} pixel {args.size === 16 ? '(default)' : ''}
+      </h2>
+      <Bee {...args} />
+    </section>
   );
+};
+
+Default.args = {
+  size: 16,
+};
+
+Default.argTypes = {
+  size: {
+    options: ['16', '20', '32'],
+    control: { type: 'select' },
+  },
 };

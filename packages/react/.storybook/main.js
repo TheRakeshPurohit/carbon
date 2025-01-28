@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,26 +7,30 @@
 
 'use strict';
 
-const fs = require('fs');
-const glob = require('fast-glob');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const path = require('path');
+import remarkGfm from 'remark-gfm';
+import fs from 'fs';
+import glob from 'fast-glob';
+import path from 'path';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+
+// We can't use .mdx files in conjuction with `storyStoreV7`, which we are using to preload stories for CI purposes only.
+// MDX files are fine to ignore in CI mode since they don't make a difference for VRT testing
+const storyGlobs = [
+  './Welcome/Welcome.mdx',
+  '../src/**/*.stories.js',
+  '../src/**/*.mdx',
+  '../src/components/Tile/Tile.mdx',
+  '../src/**/next/*.stories.js',
+  '../src/**/next/**/*.stories.js',
+  '../src/**/next/*.mdx',
+  '../src/**/*-story.js',
+];
 
 const stories = glob
-  .sync(
-    [
-      './Welcome/Welcome.stories.js',
-      '../src/**/*.stories.js',
-      '../src/**/*.stories.mdx',
-      '../src/**/next/*.stories.js',
-      '../src/**/next/**/*.stories.js',
-      '../src/**/next/*.stories.mdx',
-      '../src/**/*-story.js',
-    ],
-    {
-      cwd: __dirname,
-    }
-  )
+  .sync(storyGlobs, {
+    ignore: ['../src/**/docs/*.mdx', '../src/**/next/docs/*.mdx'],
+    cwd: __dirname,
+  })
   // Filters the stories by finding the paths that have a story file that ends
   // in `-story.js` and checks to see if they also have a `.stories.js`,
   // if so then defer to the `.stories.js`
@@ -34,7 +38,6 @@ const stories = glob
     const filepath = path.resolve(__dirname, match);
     const basename = path.basename(match, '.js');
     const denylist = new Set([
-      'TooltipDefinition-story',
       'DataTable-basic-story',
       'DataTable-batch-actions-story',
       'DataTable-filtering-story',
@@ -44,11 +47,9 @@ const stories = glob
       'DataTable-dynamic-content-story',
       'DataTable-expansion-story',
     ]);
-
     if (denylist.has(basename)) {
       return false;
     }
-
     if (basename.endsWith('-story')) {
       const component = basename.replace(/-story$/, '');
       const storyName = path.resolve(
@@ -57,18 +58,14 @@ const stories = glob
         'next',
         `${component}.stories.js`
       );
-
       if (fs.existsSync(storyName)) {
         return false;
       }
-
       return true;
     }
-
     return true;
   });
-
-module.exports = {
+const config = {
   addons: [
     {
       name: '@storybook/addon-essentials',
@@ -82,42 +79,39 @@ module.exports = {
       },
     },
     '@storybook/addon-storysource',
-    '@storybook/addon-a11y',
+    '@storybook/addon-webpack5-compiler-babel',
+    /**
+     * For now, the storybook-addon-accessibility-checker fork replaces the @storybook/addon-a11y.
+     * Eventually they plan to attempt to get this back into the root addon with the storybook team.
+     * See more: https://ibm-studios.slack.com/archives/G01GCBCGTPV/p1697230798817659
+     */
+    // '@storybook/addon-a11y',
+    'storybook-addon-accessibility-checker',
+    {
+      name: '@storybook/addon-docs',
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
   ],
-  core: {
-    builder: 'webpack5',
-  },
   features: {
     previewCsfV3: true,
+    buildStoriesJson: true,
   },
-  framework: '@storybook/react',
+  framework: {
+    name: '@storybook/react-webpack5',
+    options: {},
+  },
   stories,
   typescript: {
     reactDocgen: 'react-docgen', // Favor docgen from prop-types instead of TS interfaces
   },
+
   webpack(config) {
-    const babelLoader = config.module.rules.find((rule) => {
-      return rule.use.some(({ loader }) => {
-        return loader.includes('babel-loader');
-      });
-    });
-
-    // This is a temporary trick to get `babel-loader` to ignore packages that
-    // are brought in that have an es, lib, or umd directory.
-    //
-    // Typically this is covered by /node_modules/ (which is the default), but
-    // in our case it seems like these dependencies are resolving to where their
-    // symlink points to. In other words, `@carbon/icons-react` becomes
-    // `../icons-react/es/index.js`.
-    //
-    // This results in these files being included in `babel-loader` and causing
-    // the build times to increase dramatically
-    babelLoader.exclude = [
-      /node_modules/,
-      /packages\/.*\/(es|lib|umd)/,
-      /packages\/icons-react\/next/,
-    ];
-
     config.module.rules.push({
       test: /\.s?css$/,
       sideEffects: true,
@@ -164,7 +158,6 @@ module.exports = {
         },
       ],
     });
-
     if (process.env.NODE_ENV === 'production') {
       config.plugins.push(
         new MiniCssExtractPlugin({
@@ -172,7 +165,12 @@ module.exports = {
         })
       );
     }
-
     return config;
   },
+  docs: {
+    autodocs: true,
+    defaultName: 'Overview',
+  },
 };
+
+export default config;

@@ -1,20 +1,23 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
+@use '../../button';
 @use '../mixins' as *;
 @use '../functions' as *;
 @use '../../../breakpoint' as *;
 @use '../../../config' as *;
+@use '../../../layer' as *;
 @use '../../../motion' as *;
 @use '../../../spacing' as *;
 @use '../../../theme' as *;
 @use '../../../type' as *;
 @use '../../../utilities/button-reset';
-@use '../../../utilities/convert' as *;
+@use '../../../utilities/component-reset';
+@use '../../../utilities/convert';
 @use '../../../utilities/z-index' as *;
 
 /// UI shell header
@@ -22,30 +25,40 @@
 /// @group ui-shell
 @mixin header {
   .#{$prefix}--header {
+    @include component-reset.reset;
+
     position: fixed;
     z-index: z('header');
-    top: 0;
-    right: 0;
-    left: 0;
     display: flex;
-    height: mini-units(6);
     align-items: center;
-    border-bottom: 1px solid $border-subtle;
     background-color: $background;
+    block-size: mini-units(6);
+    border-block-end: 1px solid $border-subtle;
+    inset-block-start: 0;
+    inset-inline: 0;
   }
 
   .#{$prefix}--header__action {
     @include button-reset.reset();
 
     display: inline-flex;
-    width: mini-units(6);
-    height: mini-units(6);
-    border: rem(1px) solid transparent;
-    transition: background-color $duration-fast-02,
+    border: convert.to-rem(1px) solid transparent;
+    block-size: mini-units(6);
+    inline-size: mini-units(6);
+    transition:
+      background-color $duration-fast-02,
       border-color $duration-fast-02;
     @include breakpoint-down('md') {
-      min-width: $spacing-09;
+      min-inline-size: $spacing-09;
     }
+  }
+
+  .#{$prefix}--header__global .#{$prefix}--popover {
+    z-index: z('header') + 1;
+  }
+
+  .#{$prefix}--header__action > :first-child {
+    margin-block-start: 0;
   }
 
   .#{$prefix}--header__action
@@ -65,10 +78,10 @@
   }
 
   .#{$prefix}--header__action--active {
-    border-right: 1px solid $border-subtle;
-    border-bottom: 1px solid transparent;
-    border-left: 1px solid $border-subtle;
     background: $layer;
+    border-block-end: 1px solid transparent;
+    border-inline-end: 1px solid $border-subtle;
+    border-inline-start: 1px solid $border-subtle;
   }
 
   .#{$prefix}--header__action--active > svg {
@@ -130,10 +143,10 @@
     @include type-style('body-compact-01');
 
     display: flex;
-    height: 100%;
     align-items: center;
     padding: 0 mini-units(4) 0 mini-units(2);
-    border: rem(2px) solid transparent;
+    border: convert.to-rem(2px) solid transparent;
+    block-size: 100%;
     font-weight: 600;
     letter-spacing: 0.1px;
     line-height: 1.25rem;
@@ -162,7 +175,7 @@
 
   .#{$prefix}--header__menu-toggle:not(.#{$prefix}--header__menu-toggle__hidden)
     ~ .#{$prefix}--header__name {
-    padding-left: rem(8px);
+    padding-inline-start: convert.to-rem(8px);
   }
 
   //--------------------------------------------------------------------------
@@ -171,8 +184,8 @@
   .#{$prefix}--header__nav {
     position: relative;
     display: none;
-    height: 100%;
-    padding-left: mini-units(2);
+    block-size: 100%;
+    padding-inline-start: mini-units(2);
 
     @include breakpoint('lg') {
       display: block;
@@ -181,45 +194,49 @@
     // header nav divider
     &::before {
       position: absolute;
-      top: 50%;
-      left: 0;
       display: block;
-      width: rem(1px);
-      height: rem(24px);
       background-color: $border-subtle;
+      block-size: convert.to-rem(24px);
       content: '';
+      inline-size: convert.to-rem(1px);
+      inset-block-start: 50%;
+      inset-inline-start: 0;
       transform: translateY(-50%);
     }
   }
 
   .#{$prefix}--header__menu-bar {
+    @include component-reset.reset;
+
     display: flex;
-    height: 100%;
     padding: 0;
     margin: 0;
+    block-size: 100%;
     list-style: none;
   }
 
   a.#{$prefix}--header__menu-item {
     position: relative;
     display: flex;
-    // Used for links that are directly in the menubar to span the full height
-    height: 100%;
     align-items: center;
     padding: 0 mini-units(2);
     // Used for focus styles
     border: 2px solid transparent;
     background-color: $background;
+    // Used for links that are directly in the menubar to span the full height
+    block-size: 100%;
     color: $text-secondary;
     // Text styles
-    font-size: rem(14px);
+    font-size: convert.to-rem(14px);
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.125rem;
     // Reset link styles and make sure the text isn't selectable
     text-decoration: none;
-    transition: background-color $duration-fast-02,
-      border-color $duration-fast-02, color $duration-fast-02;
+    transition:
+      background-color $duration-fast-02,
+      border-color $duration-fast-02,
+      color $duration-fast-02;
     user-select: none;
   }
 
@@ -254,13 +271,12 @@
   a.#{$prefix}--header__menu-item[aria-current='page']::after,
   .#{$prefix}--header__menu-item--current::after {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: -2px;
-    left: 0;
-    width: 100%;
-    border-bottom: 3px solid $border-interactive;
+    background-color: $border-interactive;
+    block-size: 3px;
     content: '';
+    inline-size: calc(100% + 4px);
+    inset-block-end: -2px;
+    inset-inline-start: -2px;
   }
 
   a.#{$prefix}--header__menu-item[aria-current='page']:focus::after,
@@ -271,16 +287,21 @@
   .#{$prefix}--header__submenu .#{$prefix}--header__menu {
     a.#{$prefix}--header__menu-item[aria-current='page']::after,
     .#{$prefix}--header__menu-item--current::after {
-      bottom: 0;
-      left: -2px;
-      border-bottom: none;
-      border-left: 3px solid $border-interactive;
+      background-color: $border-interactive;
+      block-size: calc(100% + 4px);
+      inline-size: 3px;
+      inset-block-start: -2px;
+      inset-inline-start: -2px;
     }
 
     a.#{$prefix}--header__menu-item[aria-current='page']:focus::after,
     .#{$prefix}--header__menu-item--current:focus::after {
-      left: 0;
-      border-left: 3px solid $border-interactive;
+      background-color: $border-interactive;
+      block-size: calc(100% + 4px);
+      // extra, hidden width prevents flickering on focus change
+      inline-size: 5px;
+      inset-block-start: -2px;
+      inset-inline-start: -2px;
     }
   }
 
@@ -321,13 +342,13 @@
     + .#{$prefix}--header__menu {
     position: absolute;
     z-index: #{z('header') + 1};
-    bottom: 0;
-    left: 0;
     display: flex;
-    width: mini-units(25);
     flex-direction: column;
     background-color: $layer;
     box-shadow: 0 4px 8px 0 rgb(0 0 0 / 50%);
+    inline-size: mini-units(25);
+    inset-block-end: 0;
+    inset-inline-start: 0;
     transform: translateY(100%);
   }
 
@@ -351,14 +372,27 @@
     color: $text-primary;
   }
 
+  .#{$prefix}--header__menu-title[aria-expanded='true']
+    + .#{$prefix}--header__menu
+    .#{$prefix}--header__menu-item.#{$prefix}--header__menu-item--current {
+    // used for both desktop and mobile
+    background-color: $layer-selected;
+
+    &:hover {
+      background-color: $layer-selected-hover;
+    }
+  }
+
   .#{$prefix}--header__menu .#{$prefix}--header__menu-item {
-    height: mini-units(6);
+    block-size: mini-units(6);
   }
 
   .#{$prefix}--header__menu-arrow {
-    margin-left: mini-units(1);
     fill: $icon-secondary;
-    transition: transform $duration-fast-02, fill $duration-fast-02;
+    margin-inline-start: mini-units(1);
+    transition:
+      transform $duration-fast-02,
+      fill $duration-fast-02;
   }
 
   //--------------------------------------------------------------------------
@@ -366,9 +400,9 @@
   //--------------------------------------------------------------------------
   .#{$prefix}--header__global {
     display: flex;
-    height: 100%;
     flex: 1 1 0%;
     justify-content: flex-end;
+    block-size: 100%;
   }
 
   //--------------------------------------------------------------------------
@@ -377,29 +411,29 @@
   .#{$prefix}--skip-to-content {
     position: absolute;
     overflow: hidden;
-    width: 1px;
-    height: 1px;
     padding: 0;
     border: 0;
     margin: -1px;
+    block-size: 1px;
     clip: rect(0, 0, 0, 0);
+    inline-size: 1px;
     visibility: inherit;
     white-space: nowrap;
   }
 
   .#{$prefix}--skip-to-content:focus {
     z-index: 9999;
-    top: 0;
-    left: 0;
     display: flex;
-    width: auto;
-    height: 3rem;
     align-items: center;
     padding: 0 1rem;
     border: 4px solid $focus;
     background-color: $background;
+    block-size: 3rem;
     clip: auto;
     color: $text-secondary;
+    inline-size: auto;
+    inset-block-start: 0;
+    inset-inline-start: 0;
     //TO-DO: double check with design that these tokens are correct, missing spec for it
     outline: none;
   }

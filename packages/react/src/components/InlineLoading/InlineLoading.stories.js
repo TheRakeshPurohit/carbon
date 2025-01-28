@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,14 +19,6 @@ export default {
     },
   },
 };
-
-export const Default = () => (
-  <InlineLoading
-    status="active"
-    iconDescription="Loading"
-    description="Loading data..."
-  />
-);
 
 export const UxExample = () => {
   function MockSubmission({ children }) {
@@ -85,9 +77,14 @@ export const UxExample = () => {
   );
 };
 
-export const Playground = (args) => <InlineLoading {...args} />;
+export const Default = (args) => <InlineLoading {...args} />;
 
-Playground.argTypes = {
+Default.args = {
+  description: 'Loading',
+  iconDescription: 'Loading data...',
+};
+
+Default.argTypes = {
   className: {
     table: {
       disable: true,
@@ -97,13 +94,11 @@ Playground.argTypes = {
     control: {
       type: 'text',
     },
-    defaultValue: 'Loading',
   },
   iconDescription: {
     control: {
       type: 'text',
     },
-    defaultValue: 'Loading data...',
   },
   onSuccess: {
     table: {

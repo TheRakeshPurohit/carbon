@@ -1,12 +1,25 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
+/* istanbul ignore file */
+
 import { useEffect, useRef, useState } from 'react';
 
+/**
+ * @param {React.RefObject<HTMLElement>} ref
+ *
+ * @param {{
+ *   onPress?(state: { longPress: boolean }): void,
+ *   onPressIn?(): void,
+ *   onPressOut?(): void,
+ *   onLongPress?(): void,
+ *   delayLongPressMs?: number,
+ * }} options
+ */
 export function usePressable(
   ref,
   { onPress, onPressIn, onPressOut, onLongPress, delayLongPressMs = 500 } = {}
@@ -17,9 +30,7 @@ export function usePressable(
   const savedOnLongPress = useRef(onLongPress);
   const [pendingLongPress, setPendingLongPress] = useState(false);
   const [longPress, setLongPress] = useState(false);
-  const state = useRef({
-    longPress: false,
-  });
+  const state = useRef({ longPress: false });
 
   useEffect(() => {
     savedOnPress.current = onPress;

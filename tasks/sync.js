@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,11 @@
 
 const fs = require('fs-extra');
 const path = require('path');
-const prettier = require('prettier');
-const lerna = require('../lerna.json');
+const prettier = require('prettier2'); //eslint-disable-line no-unused-vars
+const lerna = require('../lerna.json'); //eslint-disable-line no-unused-vars
 const packageJson = require('../package.json');
 
+//eslint-disable-next-line no-unused-vars
 const prettierOptions = {
   ...packageJson.prettier,
   parser: 'markdown',
@@ -81,9 +82,7 @@ function sortFields(a, b) {
 
 async function sync() {
   const packagePaths = await Promise.all(
-    (
-      await fs.readdir(PACKAGES_DIR)
-    ).map(async (pkg) => {
+    (await fs.readdir(PACKAGES_DIR)).map(async (pkg) => {
       const packageJsonPath = path.join(PACKAGES_DIR, pkg, 'package.json');
       return {
         basename: pkg,
@@ -101,6 +100,7 @@ async function sync() {
       file.license = 'Apache-2.0';
       file.publishConfig = {
         access: 'public',
+        provenance: 'true',
       };
 
       if (Array.isArray(file.keywords)) {
@@ -143,6 +143,7 @@ async function sync() {
     '**/tasks/**',
   ];
   await Promise.all(
+    //eslint-disable-next-line no-unused-vars
     packages.map(async ({ packageJson, packagePath }) => {
       const ignorePath = path.join(packagePath, '.npmignore');
       const ignorePatterns = [...defaultIgnorePatterns];

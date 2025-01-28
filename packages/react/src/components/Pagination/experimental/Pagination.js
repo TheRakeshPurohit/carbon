@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2020
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,31 +9,29 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { CaretRight, CaretLeft } from '@carbon/icons-react';
-import Button from '../../Button';
 import Select from '../../Select';
 import SelectItem from '../../SelectItem';
 import { IconButton } from '../../IconButton';
-import * as FeatureFlags from '@carbon/feature-flags';
 import { usePrefix } from '../../../internal/usePrefix';
 
 function Pagination({
-  backwardText,
-  children,
-  className,
-  disabled,
-  forwardText,
-  id,
-  initialPage,
-  itemsPerPageText,
-  itemRangeText,
-  itemText,
+  backwardText = 'Previous page',
+  children = undefined,
+  className = null,
+  disabled = false,
+  forwardText = 'Next page',
+  id = 1,
+  initialPage = 1,
+  itemsPerPageText = 'Items per page:',
+  itemRangeText = (min, max, total) => `${min}–${max} of ${total} items`,
+  itemText = (min, max) => `${min}–${max} items`,
   onChange,
-  pageRangeText,
-  pageSize,
-  pageSizes,
-  pageText,
-  pagesUnknown,
-  totalItems,
+  pageRangeText = (current, total) => `${current} of ${total} pages`,
+  pageSize = 10,
+  pageSizes = undefined,
+  pageText = (page) => `page ${page}`,
+  pagesUnknown = false,
+  totalItems = undefined,
   ...other
 }) {
   const [currentPage, setCurrentPage] = useState(initialPage);
@@ -143,7 +141,7 @@ function Pagination({
               : pageRangeText(currentPage, totalPages)}
           </span>
         )}
-        {FeatureFlags.enabled('enable-v11-release') ? (
+        {
           <>
             <IconButton
               align="top"
@@ -176,42 +174,7 @@ function Pagination({
               <CaretRight />
             </IconButton>
           </>
-        ) : (
-          <>
-            <Button
-              className={classnames(
-                `${namespace}__button`,
-                `${namespace}__button--backward`,
-                {
-                  [`${namespace}__button--no-index`]: backButtonDisabled,
-                }
-              )}
-              onClick={() => decrementPage()}
-              disabled={backButtonDisabled}
-              hasIconOnly
-              renderIcon={CaretLeft}
-              tooltipAlignment="center"
-              tooltipPosition="top"
-              iconDescription={backwardText}
-            />
-            <Button
-              className={classnames(
-                `${namespace}__button`,
-                `${namespace}__button--forward`,
-                {
-                  [`${namespace}__button--no-index`]: forwardButtonDisabled,
-                }
-              )}
-              onClick={() => incrementPage()}
-              disabled={forwardButtonDisabled}
-              hasIconOnly
-              renderIcon={CaretRight}
-              tooltipAlignment="center"
-              tooltipPosition="top"
-              iconDescription={forwardText}
-            />
-          </>
-        )}
+        }
       </div>
     </section>
   );
@@ -305,25 +268,6 @@ Pagination.propTypes = {
    * to know how many pages to display.
    */
   totalItems: PropTypes.number,
-};
-
-Pagination.defaultProps = {
-  backwardText: 'Previous page',
-  className: null,
-  children: undefined,
-  disabled: false,
-  forwardText: 'Next page',
-  id: 1,
-  itemsPerPageText: 'Items per page:',
-  itemRangeText: (min, max, total) => `${min}–${max} of ${total} items`,
-  itemText: (min, max) => `${min}–${max} items`,
-  initialPage: 1,
-  pageRangeText: (current, total) => `${current} of ${total} pages`,
-  pageSize: 10,
-  pageSizes: undefined,
-  pageText: (page) => `page ${page}`,
-  pagesUnknown: false,
-  totalItems: undefined,
 };
 
 export default Pagination;

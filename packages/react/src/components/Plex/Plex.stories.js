@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,6 @@ export default {
       control: {
         type: 'radio',
       },
-      defaultValue: 'Regular',
       mapping: {
         Light: 300,
         Regular: 400,
@@ -25,6 +24,9 @@ export default {
       },
       options: ['Light', 'Regular', 'SemiBold'],
     },
+  },
+  args: {
+    fontWeight: 'Regular',
   },
 };
 

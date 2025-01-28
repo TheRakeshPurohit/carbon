@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,39 +23,34 @@ export default {
     kind: 'error',
     lowContrast: false,
     hideCloseButton: false,
-    ariaLabel: 'closes notification',
+    ['aria-label']: 'close notification',
     statusIconDescription: 'notification',
     onClose: action('onClose'),
     onCloseButtonClick: action('onCloseButtonClick'),
   },
 };
 
-export const Default = () => (
-  <ActionableNotification
-    title="Notification title"
-    subtitle="Subtitle text goes here"
-    closeOnEscape
-    inline={false}
-    actionButtonLabel="Action"
-  />
-);
+export const Default = (args) => <ActionableNotification {...args} />;
 
-export const Playground = (args) => <ActionableNotification {...args} />;
-
-Playground.argTypes = {
+Default.argTypes = {
+  ['aria-label']: {
+    table: {
+      disable: true,
+    },
+  },
   ariaLabel: {
     table: {
       disable: true,
     },
   },
   onActionButtonClick: {
-    action: 'clicked',
+    action: 'onActionButtonClick',
   },
   onClose: {
-    action: 'clicked',
+    action: 'onClose',
   },
   onCloseButtonClick: {
-    action: 'clicked',
+    action: 'onCloseButtonClick',
   },
   children: {
     table: {
@@ -67,10 +62,16 @@ Playground.argTypes = {
       disable: true,
     },
   },
+  hasFocus: {
+    table: {
+      disable: true,
+    },
+  },
 };
-Playground.args = {
+Default.args = {
   actionButtonLabel: 'Action',
   inline: false,
+  closeOnEscape: true,
   title: 'Notification title',
   subtitle: 'Subtitle text goes here',
 };

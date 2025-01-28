@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,13 @@
 
 import {
   // Blue
+  blue10,
   blue20,
   blue30,
   blue40,
   blue60,
   blue70,
+  blue100,
 
   // Gray
   gray10,
@@ -30,16 +32,19 @@ import {
   // Support
   blue50,
   green40,
-  green60,
+  green50,
   yellow30,
   orange40,
   red50,
   red60,
   purple60,
+  purple40,
 
   // Constants
+  black,
   white,
   whiteHover,
+  rgba,
 } from '@carbon/colors';
 import { adjustAlpha } from './tools';
 
@@ -109,14 +114,14 @@ export const fieldHover03 = whiteHover;
 
 // Border
 // border-subtle-00
-export const borderSubtle00 = gray20;
+export const borderSubtle00 = gray30;
 
 // border-subtle-01
 export const borderSubtle01 = gray20;
 export const borderSubtleSelected01 = gray30;
 
 // border-subtle-02
-export const borderSubtle02 = gray20;
+export const borderSubtle02 = gray30;
 export const borderSubtleSelected02 = gray30;
 
 // border-subtle-03
@@ -127,6 +132,11 @@ export const borderSubtleSelected03 = gray30;
 export const borderStrong01 = gray50;
 export const borderStrong02 = gray50;
 export const borderStrong03 = gray50;
+
+// border-tile
+export const borderTile01 = gray40;
+export const borderTile02 = gray30;
+export const borderTile03 = gray40;
 
 // border-inverse
 export const borderInverse = gray100;
@@ -154,6 +164,7 @@ export const linkPrimaryHover = blue70;
 export const linkSecondary = blue70;
 export const linkInverse = blue40;
 export const linkVisited = purple60;
+export const linkInverseVisited = purple40;
 export const linkInverseActive = gray10;
 export const linkInverseHover = blue30;
 
@@ -164,10 +175,11 @@ export const iconInverse = white;
 export const iconOnColor = white;
 export const iconOnColorDisabled = gray50;
 export const iconDisabled = adjustAlpha(iconPrimary, 0.25);
+export const iconInteractive = blue60;
 
 // Support
 export const supportError = red60;
-export const supportSuccess = green60;
+export const supportSuccess = green50;
 export const supportWarning = yellow30;
 export const supportInfo = blue70;
 export const supportErrorInverse = red50;
@@ -193,6 +205,60 @@ export const highlight = blue20;
 export const overlay = 'rgba(22, 22, 22, 0.5)';
 export const toggleOff = gray50;
 export const shadow = 'rgba(0, 0, 0, 0.3)';
+
+//// AI - Experimental (Use at your own risk)
+//// Phase 2 - new \\\\
+// Shared
+export const aiInnerShadow = rgba(blue50, 0.1);
+export const aiAuraStartSm = rgba(blue50, 0.16);
+export const aiAuraStart = rgba(blue50, 0.1);
+export const aiAuraEnd = rgba(white, 0);
+export const aiBorderStrong = blue50;
+export const aiBorderStart = rgba(blue30, 0.64);
+export const aiBorderEnd = blue40;
+export const aiDropShadow = rgba(blue60, 0.1);
+export const aiAuraHoverBackground = blue10;
+export const aiAuraHoverStart = rgba(blue50, 0.32);
+export const aiAuraHoverEnd = rgba(white, 0);
+
+// AI Popover
+export const aiPopoverBackground = white;
+export const aiPopoverShadowOuter01 = rgba(blue70, 0.06);
+export const aiPopoverShadowOuter02 = rgba(black, 0.04);
+
+// AI skeleton
+export const aiSkeletonBackground = blue20;
+export const aiSkeletonElementBackground = blue50;
+
+// AI Modal tokens
+export const aiOverlay = rgba(blue100, 0.5);
+
+// One off tokens for caret
+export const aiPopoverCaretCenter = '#A0C3FF';
+export const aiPopoverCaretBottom = blue40;
+export const aiPopoverCaretBottomBackgroundActions = '#E9EFFA';
+export const aiPopoverCaretBottomBackground = '#EAF1FF';
+
+// Chat tokens
+export const chatPromptBackground = white;
+export const chatPromptBorderStart = gray10;
+export const chatPromptBorderEnd = rgba(gray10, 0);
+export const chatBubbleUser = gray20;
+export const chatBubbleAgent = white;
+export const chatBubbleBorder = gray20;
+export const chatAvatarBot = gray60;
+export const chatAvatarAgent = gray80;
+export const chatAvatarUser = blue60;
+export const chatShellBackground = white;
+export const chatHeaderBackground = white;
+
+// Chat button tokens
+export const chatButton = linkPrimary;
+export const chatButtonHover = backgroundHover;
+export const chatButtonTextHover = linkPrimaryHover;
+export const chatButtonActive = backgroundActive;
+export const chatButtonSelected = backgroundSelected;
+export const chatButtonTextSelected = textSecondary;
 
 export {
   // Type
@@ -265,4 +331,13 @@ export {
   // Icon sizes
   iconSize01,
   iconSize02,
+  // Layout
+  // Deprecated ☠️
+  layout01,
+  layout02,
+  layout03,
+  layout04,
+  layout05,
+  layout06,
+  layout07,
 } from './white';

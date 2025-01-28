@@ -1,5 +1,9 @@
-import { Props, Preview, Story } from '@storybook/addon-docs';
+import { ArgTypes, Canvas, Story, Meta } from '@storybook/blocks';
 import InlineLoading from '../InlineLoading';
+import * as InlineLoadingStories from './InlineLoading.stories';
+import { stackblitzPrefillConfig } from '../../../previewer/codePreviewer';
+
+<Meta isTemplate />
 
 # InlineLoading
 
@@ -13,13 +17,19 @@ import InlineLoading from '../InlineLoading';
 
 ## Overview
 
-<Preview>
-  <Story id="components-inlineloading--default" />
-</Preview>
+<Canvas
+  of={InlineLoadingStories.Default}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(InlineLoadingStories.Default),
+    },
+  ]}
+/>
 
 ## Component API
 
-<Props />
+<ArgTypes />
 
 ## Feedback
 

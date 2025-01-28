@@ -1,16 +1,17 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
 @use 'keyframes';
+@use '../loading';
 @use '../../config' as *;
 @use '../../spacing' as *;
 @use '../../theme' as *;
 @use '../../type' as *;
-@use '../../utilities/convert' as *;
+@use '../../utilities/convert';
 
 /// @type Number
 /// @access private
@@ -23,13 +24,13 @@ $-loading-gap-small: 110;
 @mixin inline-loading {
   .#{$prefix}--inline-loading {
     display: flex;
-    width: 100%;
-    min-height: 2rem;
     align-items: center;
+    inline-size: 100%;
+    min-block-size: 2rem;
   }
 
   .#{$prefix}--inline-loading__text {
-    @include type-style('label-01');
+    @include type-style('label-02');
 
     color: $text-secondary;
   }
@@ -39,7 +40,7 @@ $-loading-gap-small: 110;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: $spacing-03;
+    margin-inline-end: $spacing-03;
   }
 
   .#{$prefix}--inline-loading__checkmark-container {
@@ -48,8 +49,8 @@ $-loading-gap-small: 110;
     // For deprecated older markup
     &.#{$prefix}--inline-loading__svg {
       position: absolute;
-      top: 0.75rem;
-      width: 0.75rem;
+      inline-size: 0.75rem;
+      inset-block-start: 0.75rem;
     }
 
     &[hidden] {
@@ -60,7 +61,7 @@ $-loading-gap-small: 110;
   .#{$prefix}--inline-loading__checkmark {
     animation-duration: 250ms;
     animation-fill-mode: forwards;
-    animation-name: stroke;
+    animation-name: #{$prefix}--stroke;
     fill: none;
     stroke: $interactive;
     stroke-dasharray: 12;
@@ -70,9 +71,9 @@ $-loading-gap-small: 110;
   }
 
   .#{$prefix}--inline-loading--error {
-    width: rem(16px);
-    height: rem(16px);
+    block-size: convert.to-rem(16px);
     fill: $support-error;
+    inline-size: convert.to-rem(16px);
 
     &[hidden] {
       display: none;
@@ -82,12 +83,21 @@ $-loading-gap-small: 110;
   .#{$prefix}--loading--small .#{$prefix}--inline-loading__svg {
     stroke: $interactive;
   }
+
+  .#{$prefix}--btn .#{$prefix}--inline-loading--btn {
+    min-block-size: 0;
+
+    .#{$prefix}--inline-loading__text {
+      @include type-style('body-short-01');
+    }
+  }
+
   /* If IE11 Don't show check animation */
   @media screen and (-ms-high-contrast: active),
     screen and (-ms-high-contrast: none) {
     .#{$prefix}--inline-loading__checkmark-container {
-      top: 1px;
-      right: 0.5rem;
+      inset-block-start: 1px;
+      inset-inline-end: 0.5rem;
     }
 
     .#{$prefix}--inline-loading__checkmark {

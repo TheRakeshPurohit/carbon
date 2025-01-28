@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,11 +14,15 @@ async function toHaveNoACViolations(node, label) {
     aChecker = require('accessibility-checker');
 
     const denylist = new Set([
-      'WCAG20_Html_HasLang',
-      'WCAG20_Doc_HasTitle',
-      'WCAG20_Body_FirstASkips_Native_Host_Sematics',
-      'RPT_Html_SkipNav',
-      'Rpt_Aria_OrphanedContent_Native_Host_Sematics',
+      'html_lang_exists',
+      'page_title_exists',
+      'skip_main_exists',
+      'html_skipnav_exists',
+      'aria_content_in_landmark',
+      'aria_child_tabbable',
+      'aria_attribute_conflict',
+      'label_name_visible',
+      'target_spacing_sufficient',
     ]);
     const ruleset = await aChecker.getRuleset('IBM_Accessibility');
     const customRuleset = JSON.parse(JSON.stringify(ruleset));

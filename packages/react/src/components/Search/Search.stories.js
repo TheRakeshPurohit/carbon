@@ -1,14 +1,17 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
+import React, { useState, useCallback } from 'react';
+
+import { WithLayer } from '../../../.storybook/templates/WithLayer';
+
 import ExpandableSearch from '../ExpandableSearch';
 import Search from '.';
-import React from 'react';
-import { Layer } from '../Layer';
+import Button from '../Button';
 
 export default {
   title: 'Components/Search',
@@ -25,23 +28,11 @@ export default {
   },
 };
 
-export const Default = () => (
-  <Search
-    size="lg"
-    defaultValue="A default value"
-    labelText="Search"
-    closeButtonLabelText="Clear search input"
-    id="search-1"
-    onChange={() => {}}
-    onKeyDown={() => {}}
-  />
-);
-
 export const Disabled = () => (
   <Search
     disabled
     size="lg"
-    defaultValue="A default value"
+    placeholder="Find your items"
     labelText="Search"
     closeButtonLabelText="Clear search input"
     id="search-1"
@@ -61,89 +52,57 @@ export const Expandable = () => (
   />
 );
 
-export const WithLayer = () => {
-  return (
-    <>
+export const _WithLayer = () => (
+  <WithLayer>
+    {(layer) => (
       <Search
         size="lg"
-        defaultValue="First Layer"
+        placeholder="Find your items"
         labelText="Search"
         closeButtonLabelText="Clear search input"
-        id="search-1"
+        id={`search-${layer}`}
         onChange={() => {}}
         onKeyDown={() => {}}
       />
-      <Layer>
-        <Search
-          size="lg"
-          defaultValue="Second Layer"
-          labelText="Search"
-          closeButtonLabelText="Clear search input"
-          id="search-1"
-          onChange={() => {}}
-          onKeyDown={() => {}}
-        />
-        <Layer>
-          <Search
-            size="lg"
-            defaultValue="Third Layer"
-            labelText="Search"
-            closeButtonLabelText="Clear search input"
-            id="search-1"
-            onChange={() => {}}
-            onKeyDown={() => {}}
-          />
-        </Layer>
-      </Layer>
-    </>
-  );
-};
+    )}
+  </WithLayer>
+);
 
-export const ExpandableWithLayer = () => {
-  return (
-    <>
+export const ExpandableWithLayer = () => (
+  <WithLayer>
+    {(layer) => (
       <ExpandableSearch
         size="lg"
+        placeholder="Search"
         labelText="First Layer"
         closeButtonLabelText="Clear search input"
-        id="search-expandable-1"
+        id={`search-expandable-${layer}`}
         onChange={() => {}}
         onKeyDown={() => {}}
       />
-      <Layer>
-        <ExpandableSearch
-          size="lg"
-          labelText="Second Layer"
-          closeButtonLabelText="Clear search input"
-          id="search-expandable-1"
-          onChange={() => {}}
-          onKeyDown={() => {}}
-        />
-        <Layer>
-          <ExpandableSearch
-            size="lg"
-            labelText="Third Layer"
-            closeButtonLabelText="Clear search input"
-            id="search-expandable-1"
-            onChange={() => {}}
-            onKeyDown={() => {}}
-          />
-        </Layer>
-      </Layer>
-    </>
-  );
-};
+    )}
+  </WithLayer>
+);
 
-export const Playground = (args) => (
-  <div style={{ width: args.playgroundWidth }}>
-    <Search id="search-playground-1" {...args} />
+export const Default = (args) => (
+  <div style={{ width: args.defaultWidth }}>
+    <Search id="search-default-1" {...args} />
   </div>
 );
 
-Playground.argTypes = {
-  playgroundWidth: {
+Default.args = {
+  closeButtonLabelText: 'Clear search input',
+  disabled: false,
+  labelText: 'Label text',
+  placeholder: 'Placeholder text',
+  role: 'searchbox',
+  size: 'md',
+  type: 'text',
+};
+
+Default.argTypes = {
+  defaultWidth: {
     control: { type: 'range', min: 300, max: 800, step: 50 },
-    defaultValue: 300,
   },
   className: {
     table: {
@@ -154,13 +113,11 @@ Playground.argTypes = {
     control: {
       type: 'text',
     },
-    defaultValue: 'Clear search input',
   },
   disabled: {
     control: {
       type: 'boolean',
     },
-    defaultValue: false,
   },
   id: {
     table: {
@@ -171,19 +128,16 @@ Playground.argTypes = {
     control: {
       type: 'text',
     },
-    defaultValue: 'Default value',
   },
   labelText: {
     control: {
       type: 'text',
     },
-    defaultValue: 'Label text',
   },
   placeholder: {
     control: {
       type: 'text',
     },
-    defaultValue: 'Placeholder text',
   },
   renderIcon: {
     control: false,
@@ -192,10 +146,8 @@ Playground.argTypes = {
     control: {
       type: 'text',
     },
-    defaultValue: 'searchbox',
   },
   size: {
-    defaultValue: 'md',
     options: ['sm', 'md', 'lg'],
     control: {
       type: 'select',
@@ -205,6 +157,5 @@ Playground.argTypes = {
     control: {
       type: 'text',
     },
-    defaultValue: 'text',
   },
 };

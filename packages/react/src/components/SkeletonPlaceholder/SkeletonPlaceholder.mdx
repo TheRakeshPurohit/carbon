@@ -1,4 +1,8 @@
-import { Props } from '@storybook/addon-docs';
+import { Story, ArgTypes, Canvas, Meta } from '@storybook/blocks';
+import * as SkeletonPlaceholderStories from './SkeletonPlaceholder.stories';
+import { stackblitzPrefillConfig } from '../../../previewer/codePreviewer';
+
+<Meta isTemplate />
 
 # SkeletonPlaceholder
 
@@ -10,9 +14,20 @@ import { Props } from '@storybook/addon-docs';
 
 ## Overview
 
+<Canvas
+  of={SkeletonPlaceholderStories.Default}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () =>
+        stackblitzPrefillConfig(SkeletonPlaceholderStories.Default),
+    },
+  ]}
+/>
+
 ## Component API
 
-<Props />
+<ArgTypes />
 
 ## Feedback
 

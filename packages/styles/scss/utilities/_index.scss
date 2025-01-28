@@ -1,10 +1,11 @@
 //
-// Copyright IBM Corp. 2018, 2018
+// Copyright IBM Corp. 2018, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
+@forward 'ai-gradient';
 @forward 'box-shadow';
 @forward 'button-reset' as button-*;
 @forward 'component-reset' as component-*;
@@ -13,6 +14,7 @@
 @forward 'hide-at-breakpoint';
 @forward 'high-contrast-mode';
 @forward 'keyframes';
+@forward 'layout';
 @forward 'placeholder-colors';
 @forward 'rotate';
 @forward 'skeleton';

@@ -1,15 +1,23 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 import React from 'react';
+
+import { WithLayer } from '../../../.storybook/templates/WithLayer';
+
 import { default as Select, SelectSkeleton } from '../Select';
 import SelectItem from '../SelectItem';
 import SelectItemGroup from '../SelectItemGroup';
-import { Layer } from '../Layer';
+import Button from '../Button';
+import { AILabel, AILabelContent, AILabelActions } from '../AILabel';
+import { IconButton } from '../IconButton';
+import { View, FolderOpen, Folders } from '@carbon/icons-react';
+import mdx from './Select.mdx';
+import { Tooltip } from '../Tooltip';
 
 export default {
   title: 'Components/Select',
@@ -62,160 +70,142 @@ export default {
     SelectItemGroup,
     SelectSkeleton,
   },
+  parameters: {
+    docs: {
+      page: mdx,
+    },
+  },
 };
 
-export const Default = () => {
-  return (
-    <div>
-      <Select
-        id="select-1"
-        defaultValue="placeholder-item"
-        labelText="Select an option"
-        helperText="Optional helper text">
-        <SelectItem
-          disabled
-          hidden
-          value="placeholder-item"
-          text="Choose an option"
-        />
-        <SelectItemGroup label="Category 1">
-          <SelectItem value="option-1" text="Option 1" />
-          <SelectItem value="option-2" text="Option 2" />
-        </SelectItemGroup>
-        <SelectItemGroup label="Category 2">
-          <SelectItem value="option-3" text="Option 3" />
-          <SelectItem value="option-4" text="Option 4" />
-        </SelectItemGroup>
-      </Select>
-    </div>
-  );
-};
-
-export const Inline = () => {
+export const Inline = (args) => {
   return (
     <div>
       <Select
         inline
         id="select-1"
-        defaultValue="placeholder-item"
         labelText="Select"
-        helperText="Optional helper text">
-        <SelectItem
-          disabled
-          hidden
-          value="placeholder-item"
-          text="Choose an option"
-        />
-        <SelectItemGroup label="Category 1">
-          <SelectItem value="option-1" text="Option 1" />
-          <SelectItem value="option-2" text="Option 2" />
-        </SelectItemGroup>
-        <SelectItemGroup label="Category 2">
-          <SelectItem value="option-3" text="Option 3" />
-          <SelectItem value="option-4" text="Option 4" />
-        </SelectItemGroup>
+        helperText="Optional helper text"
+        {...args}>
+        <SelectItem value="" text="" />
+        <SelectItem value="Option 1" text="Option 1" />
+        <SelectItem value="Option 2" text="Option 2" />
+        <SelectItem value="Option 3" text="Option 3" />
+        <SelectItem value="Option 4" text="Option 4" />
       </Select>
     </div>
   );
 };
 
-export const Skeleton = () => (
-  <div
-    aria-label="loading select"
-    aria-live="assertive"
-    role="status"
-    tabIndex="0" // eslint-disable-line jsx-a11y/no-noninteractive-tabindex
-  >
-    <SelectSkeleton />
+Inline.args = {
+  inline: true,
+};
+
+export const Skeleton = () => <SelectSkeleton />;
+
+export const _WithLayer = (args) => (
+  <WithLayer>
+    {(layer) => (
+      <Select
+        id={`select-${layer}`}
+        labelText=""
+        helperText="Optional helper text"
+        {...args}>
+        <SelectItem value="" text="" />
+        <SelectItem
+          value="An example option that is really long to show what should be done to handle long text"
+          text="An example option that is really long to show what should be done to handle long text"
+        />
+        <SelectItem value="Option 2" text="Option 2" />
+      </Select>
+    )}
+  </WithLayer>
+);
+
+_WithLayer.argTypes = {
+  inline: {
+    control: false,
+  },
+};
+
+const aiLabel = (
+  <AILabel className="ai-label-container">
+    <AILabelContent>
+      <div>
+        <p className="secondary">AI Explained</p>
+        <h1>84%</h1>
+        <p className="secondary bold">Confidence score</p>
+        <p className="secondary">
+          Lorem ipsum dolor sit amet, di os consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut fsil labore et dolore magna aliqua.
+        </p>
+        <hr />
+        <p className="secondary">Model type</p>
+        <p className="bold">Foundation model</p>
+      </div>
+      <AILabelActions>
+        <IconButton kind="ghost" label="View">
+          <View />
+        </IconButton>
+        <IconButton kind="ghost" label="Open Folder">
+          <FolderOpen />
+        </IconButton>
+        <IconButton kind="ghost" label="Folders">
+          <Folders />
+        </IconButton>
+        <Button>View details</Button>
+      </AILabelActions>
+    </AILabelContent>
+  </AILabel>
+);
+
+export const withAILabel = (args) => (
+  <div>
+    <Select
+      id="select-1"
+      labelText="Select an option"
+      helperText="Optional helper text"
+      decorator={aiLabel}
+      {...args}>
+      <SelectItem value="" text="" />
+      <SelectItem
+        value="An example option that is really long to show what should be done to handle long text"
+        text="An example option that is really long to show what should be done to handle long text"
+      />
+      <SelectItem value="Option 2" text="Option 2" />
+      <SelectItem value="Option 3" text="Option 3" />
+      <SelectItem value="Option 4" text="Option 4" />
+    </Select>
   </div>
 );
 
-export const WithLayer = () => {
-  return (
-    <>
-      <Select
-        id="select-1"
-        defaultValue="placeholder-item"
-        labelText=""
-        helperText="First layer">
-        <SelectItem
-          disabled
-          hidden
-          value="placeholder-item"
-          text="Choose an option"
-        />
-        <SelectItem value="option-1" text="Option 1" />
-        <SelectItem value="option-2" text="Option 2" />
-      </Select>
-      <Layer>
-        <Select
-          id="select-1"
-          defaultValue="placeholder-item"
-          labelText=""
-          helperText=" Second layer">
-          <SelectItem
-            disabled
-            hidden
-            value="placeholder-item"
-            text="Choose an option"
-          />
-          <SelectItem value="option-1" text="Option 1" />
-          <SelectItem value="option-2" text="Option 2" />
-          <SelectItem value="option-3" text="Option 3" />
-          <SelectItem value="option-4" text="Option 4" />
-        </Select>
-        <Layer>
-          <Select
-            id="select-1"
-            defaultValue="placeholder-item"
-            labelText=""
-            helperText="Third layer">
-            <SelectItem
-              disabled
-              hidden
-              value="placeholder-item"
-              text="Choose an option"
-            />
-            <SelectItem value="option-1" text="Option 1" />
-            <SelectItem value="option-2" text="Option 2" />
-            <SelectItem value="option-3" text="Option 3" />
-            <SelectItem value="option-4" text="Option 4" />
-          </Select>
-        </Layer>
-      </Layer>
-    </>
-  );
+withAILabel.argTypes = {
+  inline: {
+    control: false,
+  },
 };
 
-export const Playground = (args) => {
+export const Default = (args) => {
   return (
     <div>
       <Select
         id="select-1"
-        defaultValue="placeholder-item"
         labelText="Select an option"
         helperText="Optional helper text"
         {...args}>
+        <SelectItem value="" text="" />
         <SelectItem
-          disabled
-          hidden
-          value="placeholder-item"
-          text="Choose an option"
+          value="An example option that is really long to show what should be done to handle long text"
+          text="An example option that is really long to show what should be done to handle long text"
         />
-        <SelectItemGroup label="Category 1">
-          <SelectItem value="option-1" text="Option 1" />
-          <SelectItem value="option-2" text="Option 2" />
-        </SelectItemGroup>
-        <SelectItemGroup label="Category 2">
-          <SelectItem value="option-3" text="Option 3" />
-          <SelectItem value="option-4" text="Option 4" />
-        </SelectItemGroup>
+        <SelectItem value="Option 2" text="Option 2" />
+        <SelectItem value="Option 3" text="Option 3" />
+        <SelectItem value="Option 4" text="Option 4" />
       </Select>
     </div>
   );
 };
 
-Playground.argTypes = {
+Default.argTypes = {
   helperText: {
     control: 'text',
   },

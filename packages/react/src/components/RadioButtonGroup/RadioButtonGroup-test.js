@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,9 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import RadioButtonGroup from './RadioButtonGroup';
 import RadioButton from '../RadioButton';
+import { AILabel } from '../AILabel';
+
+const prefix = 'cds';
 
 describe('RadioButtonGroup', () => {
   it('should render `legendText` in a <label>', () => {
@@ -23,7 +26,7 @@ describe('RadioButtonGroup', () => {
     const legend = screen.getByText('test', {
       selector: 'legend',
     });
-    expect(legend).toBeDefined();
+    expect(legend).toBeInTheDocument();
   });
 
   it('should render `legendText` in a <fieldset>', () => {
@@ -38,6 +41,7 @@ describe('RadioButtonGroup', () => {
       .getByText('test', {
         selector: 'legend',
       })
+      // eslint-disable-next-line testing-library/no-node-access
       .closest('fieldset');
     expect(fieldset).toBeDefined();
   });
@@ -54,6 +58,26 @@ describe('RadioButtonGroup', () => {
       .getByText('test', {
         selector: 'legend',
       })
+      // eslint-disable-next-line testing-library/no-node-access
+      .closest('fieldset');
+    expect(fieldset).toContainElement(screen.getByLabelText('test-1'));
+    expect(fieldset).toContainElement(screen.getByLabelText('test-2'));
+  });
+
+  it('should ignore null children', () => {
+    render(
+      <RadioButtonGroup defaultSelected="test-1" name="test" legendText="test">
+        <RadioButton labelText="test-1" value="test-1" />
+        <RadioButton labelText="test-2" value="test-2" />
+        {null}
+      </RadioButtonGroup>
+    );
+
+    const fieldset = screen
+      .getByText('test', {
+        selector: 'legend',
+      })
+      // eslint-disable-next-line testing-library/no-node-access
       .closest('fieldset');
     expect(fieldset).toContainElement(screen.getByLabelText('test-1'));
     expect(fieldset).toContainElement(screen.getByLabelText('test-2'));
@@ -90,8 +114,34 @@ describe('RadioButtonGroup', () => {
         .getByText('test', {
           selector: 'legend',
         })
+        // eslint-disable-next-line testing-library/no-node-access
         .closest('fieldset');
       expect(fieldset).toBeDisabled();
+    });
+
+    it('should support readonly to prevent changes', async () => {
+      render(
+        <RadioButtonGroup
+          defaultSelected="test-1"
+          readOnly={true}
+          name="test"
+          legendText="test">
+          <RadioButton labelText="test-1" value="test-1" />
+          <RadioButton labelText="test-2" value="test-2" />
+        </RadioButtonGroup>
+      );
+
+      const radio1 = screen.getByLabelText('test-1');
+      const radio2 = screen.getByLabelText('test-2');
+
+      expect(radio1).toBeChecked();
+      expect(radio2).not.toBeChecked();
+
+      await userEvent.click(radio2);
+
+      // no change
+      expect(radio1).toBeChecked();
+      expect(radio2).not.toBeChecked();
     });
 
     it('should support `defaultSelected` as a way to select a radio button', () => {
@@ -183,7 +233,35 @@ describe('RadioButtonGroup', () => {
       );
     });
 
-    it('should call `onChange` when the value of the group changes', () => {
+    it('should respect decorator prop', () => {
+      const { container } = render(
+        <RadioButtonGroup decorator={<AILabel />} name="test" legendText="test">
+          <RadioButton labelText="test-1" value={1} />
+          <RadioButton labelText="test-0" value={0} />
+        </RadioButtonGroup>
+      );
+
+      expect(container.firstChild.firstChild).toHaveClass(
+        `${prefix}--radio-button-group--decorator`
+      );
+    });
+
+    it('should respect deprecated slug prop', () => {
+      const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const { container } = render(
+        <RadioButtonGroup slug={<AILabel />} name="test" legendText="test">
+          <RadioButton labelText="test-1" value={1} />
+          <RadioButton labelText="test-0" value={0} />
+        </RadioButtonGroup>
+      );
+
+      expect(container.firstChild.firstChild).toHaveClass(
+        `${prefix}--radio-button-group--slug`
+      );
+      spy.mockRestore();
+    });
+
+    it('should call `onChange` when the value of the group changes', async () => {
       const onChange = jest.fn();
 
       render(
@@ -193,7 +271,7 @@ describe('RadioButtonGroup', () => {
         </RadioButtonGroup>
       );
 
-      userEvent.click(screen.getByLabelText('Option one'));
+      await userEvent.click(screen.getByLabelText('Option one'));
       expect(onChange).toHaveBeenCalled();
       expect(onChange).toHaveBeenCalledWith(
         'option-one',
@@ -225,6 +303,29 @@ describe('RadioButtonGroup', () => {
         expect(screen.getByLabelText('Option one')).not.toBeChecked();
         expect(screen.getByLabelText('Option two')).toBeChecked();
       });
+    });
+    it('should place required on every child <RadioButton>', () => {
+      render(
+        <RadioButtonGroup name="test" required>
+          <RadioButton labelText="Option 1" value="option-1" />
+          <RadioButton labelText="Option 2" value="option-2" />
+        </RadioButtonGroup>
+      );
+
+      expect(screen.getByDisplayValue('option-1')).toBeRequired();
+      expect(screen.getByDisplayValue('option-2')).toBeRequired();
+    });
+
+    it('should override required on every child <RadioButton>', () => {
+      render(
+        <RadioButtonGroup name="test" required>
+          <RadioButton labelText="Option 1" value="option-1" required={false} />
+          <RadioButton labelText="Option 2" value="option-2" />
+        </RadioButtonGroup>
+      );
+
+      expect(screen.getByDisplayValue('option-1')).toBeRequired();
+      expect(screen.getByDisplayValue('option-2')).toBeRequired();
     });
   });
 });

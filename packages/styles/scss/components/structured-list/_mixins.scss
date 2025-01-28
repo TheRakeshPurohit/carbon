@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -32,13 +32,11 @@ $structured-list-text-transform: none !default;
 /// @group structured-list
 /// @param {Number} $padding [$structured-list-padding]
 @mixin padding--data-structured-list($padding: $structured-list-padding) {
-  padding-right: $padding * 0.5;
-  padding-left: $padding * 0.5;
+  padding-inline: $padding * 0.5 $padding * 0.5;
 
   // Controls gutter sizes for check
   &:first-child {
-    padding-right: $padding * 0.5;
-    padding-left: $padding * 0.5;
+    padding-inline: $padding * 0.5 $padding * 0.5;
   }
 }
 

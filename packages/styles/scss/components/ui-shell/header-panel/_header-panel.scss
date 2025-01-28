@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 @use '../functions' as *;
 @use '../../../config' as *;
+@use '../../../layer' as *;
 @use '../../../motion' as *;
 @use '../../../theme' as *;
 @use '../../../utilities/z-index' as *;
@@ -21,21 +22,21 @@
   .#{$prefix}--header-panel {
     position: fixed;
     z-index: z('header');
-    top: mini-units(6);
-    right: 0;
-    bottom: 0;
     overflow: hidden;
-    width: 0;
     border: none;
     background-color: $layer;
     color: $text-secondary;
+    inline-size: 0;
+    inset-block: mini-units(6) 0;
+    inset-inline-end: 0;
     transition: width $duration-fast-02 motion(exit, productive);
     will-change: width;
   }
 
   .#{$prefix}--header-panel--expanded {
-    width: mini-units(32);
-    border-right: 1px solid $border-subtle;
-    border-left: 1px solid $border-subtle;
+    border-inline-end: 1px solid $border-subtle;
+    border-inline-start: 1px solid $border-subtle;
+    inline-size: mini-units(32);
+    overflow-y: auto;
   }
 }

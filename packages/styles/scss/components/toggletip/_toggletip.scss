@@ -1,10 +1,11 @@
 //
-// Copyright IBM Corp. 2018, 2018
+// Copyright IBM Corp. 2018, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
+@use '../button';
 @use '../../config' as *;
 @use '../../spacing';
 @use '../../theme';
@@ -16,10 +17,10 @@
 
 @mixin toggletip() {
   .#{$prefix}--toggletip-label {
-    @include type.type-style('label-01');
+    @include type.type-style('body-01');
 
-    margin-right: spacing.$spacing-03;
     color: theme.$text-secondary;
+    margin-inline-end: spacing.$spacing-03;
   }
 
   .#{$prefix}--toggletip-button {
@@ -43,7 +44,10 @@
   }
 
   .#{$prefix}--toggletip {
-    @include custom-property.declaration('popover-offset', convert.rem(13px));
+    @include custom-property.declaration(
+      'popover-offset',
+      convert.to-rem(13px)
+    );
   }
 
   .#{$prefix}--toggletip-content {
@@ -57,7 +61,11 @@
     );
     @include custom-property.declaration(
       'link-hover-text-color',
-      theme.$link-inverse
+      theme.$link-inverse-hover
+    );
+    @include custom-property.declaration(
+      'link-visited-text-color',
+      theme.$link-inverse-visited
     );
     @include custom-property.declaration(
       'link-focus-text-color',
@@ -66,9 +74,13 @@
     @include type.type-style('body-01');
 
     display: grid;
-    max-width: 18rem;
     padding: spacing.$spacing-05;
+    max-inline-size: 18rem;
     row-gap: spacing.$spacing-05;
+  }
+
+  .#{$prefix}--toggletip-content p {
+    @include type.type-style('body-01');
   }
 
   .#{$prefix}--toggletip-actions {

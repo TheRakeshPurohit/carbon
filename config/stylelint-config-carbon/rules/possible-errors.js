@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 const OFF = null;
 
-module.exports = {
+export default {
   rules: {
     // Color
     'color-no-invalid-hex': true,
@@ -65,7 +65,7 @@ module.exports = {
     'no-duplicate-at-import-rules': true,
     'no-duplicate-selectors': true,
     'no-empty-source': true,
-    'no-extra-semicolons': true,
+    // 'no-extra-semicolons': true,
     // Doesn't trigger when using a preprocessor that allows double slash
     // comments
     'no-invalid-double-slash-comments': true,

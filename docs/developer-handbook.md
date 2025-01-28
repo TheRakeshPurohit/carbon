@@ -7,7 +7,6 @@
 
 - [Getting started](#getting-started)
 - [Common tasks](#common-tasks)
-  - [`carbon-components`](#carbon-components)
 - [Dependency management](#dependency-management)
   - [Continuous Integration](#continuous-integration)
 - [Package architecture and layout](#package-architecture-and-layout)
@@ -26,12 +25,9 @@
   - [Start a new `block` or `element`?](#start-a-new-block-or-element)
   - [Red flags](#red-flags)
   - [Files and folders](#files-and-folders)
-  - [Defining markups for components and their variants](#defining-markups-for-components-and-their-variants)
-  - [Defining markup with no conditional or data interpolations](#defining-markup-with-no-conditional-or-data-interpolations)
-  - [Defining markup with conditionals or data interpolations](#defining-markup-with-conditionals-or-data-interpolations)
   - [Working on JavaScript-framework-specific styles](#working-on-javascript-framework-specific-styles)
   - [Using `npm link`/`yarn link`](#using-npm-linkyarn-link)
-  - [Pointing NPM dependency of `carbon-components` right to the source code](#pointing-npm-dependency-of-carbon-components-right-to-the-source-code)
+  - [Pointing NPM dependency of `@carbon/styles` right to the source code](#pointing-npm-dependency-of-carbonstyles-right-to-the-source-code)
 - [Maintainers](#maintainers)
   - [Working with icons and pictograms](#working-with-icons-and-pictograms)
   - [Code Patterns](#code-patterns)
@@ -40,7 +36,7 @@
     - [Publishing older library versions](#publishing-older-library-versions)
 - [FAQ](#faq)
     - [How do I install a dependency?](#how-do-i-install-a-dependency)
-    - [CircleCI is failing saying that it cannot find a dependency in offline mode](#circleci-is-failing-saying-that-it-cannot-find-a-dependency-in-offline-mode)
+    - [CI is failing saying that it cannot find a dependency in offline mode](#ci-is-failing-saying-that-it-cannot-find-a-dependency-in-offline-mode)
     - [How do I fix the repo state if I cancel during a publish?](#how-do-i-fix-the-repo-state-if-i-cancel-during-a-publish)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -109,36 +105,6 @@ package you could do the following:
 yarn lerna run build
 ```
 
-### `carbon-components`
-
-Tests are written in [Mocha](https://mochajs.org)/[Chai](http://chaijs.com). You
-can see if your code is covered by looking at
-carbon-components/tests/coverage/\*/index.html after running test.
-
-If your change may hit some browser quirks, use `-b` option, like:
-
-```sh
-gulp test:unit -b IE -b Firefox
-```
-
-(Other browsers tests can run with are: `Safari`, `Chrome` and `ChromeHeadless`)
-
-If you are very sure that your change affects a specific set of components, you
-can use `-f` option, like:
-
-```sh
-gulp test:unit -f tests/spec/fab_spec.js
-```
-
-Other options for testing are:
-
-- `-d`/`--debug`: Stop generating code coverage report. Useful to debug your
-  code when running test.
-- `-k`/`--keepalive`: Keep running test runner even after test ends. Test will
-  restart running when you make changes to any test files or any files under
-  test.
-- `-v`/`--verbose`: Let Karma emit detailed log.
-
 ## Dependency management
 
 In light of potential `npm` security issues
@@ -153,11 +119,18 @@ Byron.
 
 ### Continuous Integration
 
-We specify a `.yarnc` file in this project that sets the path for Yarn's offline
-mirror to the folder `.yarn/offline-mirror`. This folder contains all the
-tarballs for the packages that the project uses. What this allows us to do is
-run `yarn install --offline` in our Continuous Integration environment so that
-we don't have to fetch from the live registry in our builds.
+We specify a `.yarnc` file in this project that sets the path for Yarn's
+[offline cache](https://yarnpkg.com/features/offline-cache) to the folder
+`.yarn/cache`. This folder contains all the tarballs for the packages that the
+project uses.
+
+> The way it works is simple: each time a package is downloaded from a remote
+> location ... a copy will be stored within the cache. The next time this same
+> package will need to be installed, Yarn will leverage the version stored
+> within cache instead of downloading its original source.
+
+This ensures that packages are available no matter if the network goes down or
+the npm registry is unavailable.
 
 ## Package architecture and layout
 
@@ -371,6 +344,31 @@ Avoid nesting selectors, this will make it easier to maintain in the future.
 }
 ```
 
+Use
+[CSS logical properties and values](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_logical_properties_and_values)
+for layout. These are impacted by the writing mode and provide support for
+right-to-left styling out of the box.
+
+```scss
+// Don't do this
+.my-element {
+  padding-top: 2em;
+  padding-bottom: 2em;
+  margin-left: 2em;
+  position: relative;
+  top: 0.2em;
+}
+
+// Do this instead
+.my-element {
+  padding-block-start: 2em;
+  padding-block-end: 2em;
+  margin-inline-start: 2em;
+  position: relative;
+  inset-block-start: 0.2em;
+}
+```
+
 ### Sass documentation
 
 [SassDoc](http://sassdoc.com) is used to document the Carbon Sass source.
@@ -470,81 +468,11 @@ Avoid names with multiple `__element` names:
 
 ### Files and folders
 
-All components belong in `src/components` in their own folder.
+All react components belong in `packages/react/src/components` in their own
+folder.
 
-Name files and folders using **singular** form; not plural.
-
-```
-button
-  - button.hbs
-  - _button.scss
-  - button.js
-  - button.config.js
-```
-
-Also note that all variants of a component can live in a single HBS, SCSS and JS
-file respectively. For example, while there are many button variants (primary,
-secondary, etc.), they're all contained in those single source files in the
-button folder.
-
-### Defining markups for components and their variants
-
-There are two ways to define markups for components and their variants:
-
-1. Defining markup with no conditional or data interpolations
-2. Defining markup with conditionals or data interpolations
-
-### Defining markup with no conditional or data interpolations
-
-To define markup with no conditional or data interpolation you will need to add
-a `.hbs` file to the component directory. No `.config.js` file in the component
-directory is required in this case. One thing to note is that If there is a
-`.hbs` file whose basename is exactly the same as the component name, other
-`.hbs` files has to be in `componentname--variantname.hbs` format.
-
-### Defining markup with conditionals or data interpolations
-
-Defining markup with conditionals or data interpolations requires creating
-`.config.js` file, which is a
-[JavaScript module format of Fractal configuration](https://fractal.build/guide/core-concepts/configuration-files.html#configuration-file-formats),
-in component directory. `.hbs` files are rendered with the data given via
-`context` property in `variants[n]` (below).
-
-Supported
-[properties in `.config.js`](https://fractal.build/guide/components/configuration-reference.html#component-properties)
-are the following:
-
-- [`default`](https://fractal.build/guide/components/configuration#default): The
-  default variant name
-- [`variants`](https://fractal.build/guide/components/configuration#variant-properties) -
-  An array of objects, supporting the following properties:
-  - `name`: The variant name
-  - `label`: The variant name shown in dev env UI
-  - `notes`: A short explainer the variant shown in dev env UI
-  - `context`: The data used for rendering `.hbs`
-  - `view`: The basename of the `.hbs` file for variant markup (Unlike
-    [default Fractal environment](https://fractal.build/guide/components/configuration#view),
-    this property should point to the basename of a `.hbs` file under `demo`
-    directory or `src` directory, _without_ its path)
-  - `preview`: The basename of the `.hbs` file for the markup that lays out the
-    variant markup, in "full render" mode (Unlike
-    [default Fractal environment](https://fractal.build/guide/components/configuration#preview),
-    this property should point to the basename of a `.hbs` file under `demo`
-    directory or `src` directory, _without_ `@` symbol)
-  - `meta`: Some metadata. Carbon vanilla development environment reads the
-    following ones specifically:
-    - `linkOnly`: Only full-page demo is allowed
-    - `useIframe`: Use of `<iframe>` for non full-page demo
-    - `xVersionOnly`: Supports "experimental" theme only
-    - `xVersionNotSupported`: "Experimental" theme is not supported
-
-What `.hbs` file is used for rendering a variant is determined by searching for
-`.hbs` files in `demo` or `src` directory and find one whose basename matches
-one of the following (the priority is the following order):
-
-1. `view` property in `variants[n]`
-2. Variant handle, which takes a format of `componentname--variantname` format
-3. Component handle, which is `componentname`
+All Component styles belong in `packages/styles/scss/components` in their own
+folder.
 
 ### Working on JavaScript-framework-specific styles
 
@@ -558,7 +486,7 @@ There are a couple ways to work on framework-specific style.
 ### Using `npm link`/`yarn link`
 
 This is the most straightforward way. When in the directory of your
-`carbon-components` folder, run the following command:
+`@carbon/styles` folder, run the following command:
 
 ```bash
 yarn link
@@ -567,30 +495,30 @@ yarn link
 You should see a success message similar to:
 
 ```bash
-success Registered "carbon-components".
-info You can now run `yarn link "carbon-components"` in the projects where you want to use this package and it will be used instead.
+success Registered "@carbon/styles".
+info You can now run `yarn link "@carbon/styles"` in the projects where you want to use this package and it will be used instead.
 ```
 
 Now, go to the folder where `carbon-components-angular` is located and run:
 
 ```bash
-yarn link carbon-components
+yarn link @carbon/styles
 ```
 
 You should see a success message similar to:
 
 ```bash
-success Using linked package for "carbon-components".
+success Using linked package for "@carbon/styles".
 ```
 
-The `yarn link` command will allow us to point the `carbon-components` package
+The `yarn link` command will allow us to point the `@carbon/styles` package
 under `node_modules` to the folder on our filesystem. So, if we make a change in
-`carbon-components` and re-compile the project it will update in the Storybook
+`@carbon/styles` and re-compile the project it will update in the Storybook
 environment for `carbon-components-angular`.
 
 In addition, if you would like to have your changes to styles automatically
 compile and update Storybook you can run the following command in the
-`carbon-components` folder on your machine:
+`@carbon/styles` folder on your machine:
 
 ```bash
 yarn gulp watch -s
@@ -600,26 +528,26 @@ This will run the `watch` command in `gulpfile.js`. As a result, whenever you
 make a change to the project styles it will automatically copy over into the
 `scss` folder which Storybook uses in `carbon-components-angular`.
 
-### Pointing NPM dependency of `carbon-components` right to the source code
+### Pointing NPM dependency of `@carbon/styles` right to the source code
 
-Though above approach is the most straightforward, it involves an overhead of
-having to run build process at `carbon-components`, in addition to one at
-framework variant repo, upon every Sass code change.
+Though the above approach is the most straightforward, it involves the overhead
+of having to run the build process at `@carbon/styles`, in addition to one at
+the framework variant repo, upon every Sass code change.
 
-To avoid such overhead, you can point NPM dependency of `carbon-components`
-right to the source code, though there is a caveat that our future change to
+To avoid such overhead, you can point NPM dependency of `@carbon/styles` right
+to the source code, though there is a caveat that our future change to the
 directory structure, etc. may make such steps no longer work. Here are the
 steps:
 
 ```sh
-> cd /path/to/carbon-components-angular/node_modules/carbon-components
+> cd /path/to/carbon-components-angular/node_modules/@carbon/styles
 > mv scss scss.orig
-> ln -s /path/to/carbon-components/src scss
+> ln -s /path/to/@carbon/styles/scss scss
 ```
 
-Then edits of `.scss` files in `/path/to/carbon-components/src` will be
-reflected to the development environment of your framework variant repository.
-You don't need to do anything in `carbon-components` side.
+Then edits of `.scss` files in `/path/to/@carbon/styles/scss` will be reflected
+to the development environment of your framework variant repository. You don't
+need to do anything in `@carbon/styles` side.
 
 ## Maintainers
 
@@ -819,10 +747,10 @@ code at that point in time.
 
 When installing a dependency, you can run `yarn add <dependency-name>` as
 normal. The only difference now is that you also will check in the corresponding
-tarball entry in `.yarn/offline-mirror` as well so that we don't have to fetch
-this dependency from the live registry during Continuous Integration builds.
+tarball entry in `.yarn/cache` as well so that we don't have to fetch this
+dependency from the live registry during Continuous Integration builds.
 
-#### CircleCI is failing saying that it cannot find a dependency in offline mode
+#### CI is failing saying that it cannot find a dependency in offline mode
 
 Most likely this is due to Yarn mistakenly removing, or forgetting to add, a
 dependency to our offline mirror. Typically, running the following set of

@@ -1,6 +1,10 @@
-import { Story, Props, Source, Preview } from '@storybook/addon-docs';
+import { Story, ArgTypes, Canvas, Meta } from '@storybook/blocks';
 import Dropdown from '../Dropdown';
 import DropdownSkeleton from './Dropdown.Skeleton';
+import * as DropdownStories from './Dropdown.stories';
+import { stackblitzPrefillConfig } from '../../../previewer/codePreviewer';
+
+<Meta isTemplate />
 
 # Dropdown
 
@@ -12,8 +16,7 @@ import DropdownSkeleton from './Dropdown.Skeleton';
 
 ## Table of Contents
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+{/* <!-- START doctoc generated TOC please keep comment here to allow auto update --> <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE --> */}
 
 - [Overview](#overview)
   - [Inline dropdown](#inline-dropdown)
@@ -33,7 +36,7 @@ import DropdownSkeleton from './Dropdown.Skeleton';
 - [References](#references)
 - [Feedback](#feedback)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+{/* <!-- END doctoc generated TOC please keep comment here to allow auto update --> */}
 
 ## Overview
 
@@ -41,18 +44,30 @@ Dropdowns present a list of options from which a user can select one option, or
 several. A selected option can represent a value in a form, or can be used as an
 action to filter or sort existing content.
 
-<Preview>
-  <Story id="components-dropdown--default" />
-</Preview>
+<Canvas
+  of={DropdownStories.Default}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(DropdownStories.Default),
+    },
+  ]}
+/>
 
 ### Inline dropdown
 
 You can place a `Dropdown` inline with other content by using the `inline`
 variant
 
-<Preview>
-  <Story id="components-dropdown--inline" />
-</Preview>
+<Canvas
+  of={DropdownStories.Inline}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(DropdownStories.Inline),
+    },
+  ]}
+/>
 
 ### Skeleton state
 
@@ -60,13 +75,19 @@ You can use the `DropdownSkeleton` component to render a skeleton variant of a
 `Dropdown`. This is useful to display on initial page load or when data needs to
 be fetched from an external API.
 
-<Preview>
-  <Story id="components-dropdown--skeleton" />
-</Preview>
+<Canvas
+  of={DropdownStories.Skeleton}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(DropdownStories.Skeleton),
+    },
+  ]}
+/>
 
 ## Component API
 
-<Props />
+<ArgTypes />
 
 ### Dropdown `direction`
 
@@ -86,6 +107,7 @@ to the top of the screen. To do this, specify `direction="top"`
   label="Select an option..."
   direction="top"
   id="direction"
+  titleText="Dropdown label"
 />
 
 ```jsx
@@ -97,6 +119,11 @@ to the top of the screen. To do this, specify `direction="top"`
 Our `Dropdown` component utilizes [Downshift](https://www.downshift-js.com/)
 under the hood to help provide complex yet accessible custom dropdown
 components. We provide access to the built in Downshift features with this prop.
+
+Use with caution: anything you define here overrides the components' internal
+handling of that prop. Downshift internals are subject to change, and in some
+cases they can not be shimmed to shield you from potentially breaking changes.
+
 For more information, checkout the Downshift prop
 [documentation](https://www.downshift-js.com/downshift#props-used-in-examples)
 
@@ -108,7 +135,7 @@ want to fully control the component, you can use `initialSelectedItem`.
 ```jsx
 const items = ['Option 1', 'Option 2', 'Option 3']
 
-<Dropdown initialSelectedItem={items[2]} />;
+<Dropdown initialSelectedItem={items[2]} />
 ```
 
 ### Dropdown `itemToElement`
@@ -136,6 +163,7 @@ the text of the item in the input on selection.
   }
   label="Select an option..."
   id="item-to-element"
+  titleText="Dropdown label"
 />
 
 ```jsx
@@ -155,6 +183,7 @@ the text of the item in the input on selection.
     )
   }
   label="Select an option..."
+  titleText="Dropdown label"
 />
 ```
 
@@ -181,6 +210,7 @@ If the `items` array is not an array of strings, you'll need to use
   }
   label="Select an option..."
   id="item-to-element"
+  titleText="Dropdown label"
 />
 
 ```jsx
@@ -202,6 +232,7 @@ If the `items` array is not an array of strings, you'll need to use
   }
   label="Select an option..."
   id="item-to-element"
+  titleText="Dropdown label"
 />
 ```
 
@@ -265,19 +296,23 @@ There are three sizes of `Dropdown` available: `sm`, `lg` (the default), and
   size="sm"
   label="Small [sm]"
   id="sm"
+  titleText="Dropdown label"
 />
 <br />
 <Dropdown
   items={['Option 1', 'Option 2', 'Option 3']}
+  label="Medium [md]"
+  id="md"
+  size="md"
+  titleText="Dropdown label"
+/>
+<br />
+<Dropdown
+  items={['Option 1', 'Option 2', 'Option 3']}
+  size="lg"
   label="Large [lg]"
   id="lg"
-/>
-<br />
-<Dropdown
-  items={['Option 1', 'Option 2', 'Option 3']}
-  size="xl"
-  label="Extra Large [xl]"
-  id="xl"
+  titleText="Dropdown label"
 />
 
 ```jsx
@@ -285,15 +320,19 @@ There are three sizes of `Dropdown` available: `sm`, `lg` (the default), and
   items={['Option 1', 'Option 2', 'Option 3']}
   size="sm"
   label="Small [sm]"
+  titleText="Dropdown label"
 />
 <Dropdown
   items={['Option 1', 'Option 2', 'Option 3']}
+  label="Medium [md]"
+  size="md"
+  titleText="Dropdown label"
+/>
+<Dropdown
+  items={['Option 1', 'Option 2', 'Option 3']}
+  size="lg"
   label="Large [lg]"
-/>
-<Dropdown
-  items={['Option 1', 'Option 2', 'Option 3']}
-  size="xl"
-  label="Extra Large [xl]"
+  titleText="Dropdown label"
 />
 ```
 
@@ -315,6 +354,7 @@ that, pass in `type="inline"` to the `Dropdown`
   label="Inline"
   type="inline"
   id="inline"
+  titleText="Dropdown label"
 />
 
 ```jsx
@@ -322,6 +362,8 @@ that, pass in `type="inline"` to the `Dropdown`
   items={['Option 1', 'Option 2', 'Option 3']}
   label="Inline"
   type="inline"
+  is="inline"
+  titleText="Dropdown label"
 />
 ```
 

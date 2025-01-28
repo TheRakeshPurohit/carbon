@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2015, 2018
+ * Copyright IBM Corp. 2015, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,6 +20,7 @@ const buildModulesTokensFile = require('./builders/modules-tokens');
 const buildModulesButtonTokens = require('./builders/modules-button-tokens');
 const buildModulesTagTokens = require('./builders/modules-tag-tokens');
 const buildModulesNotificationTokens = require('./builders/modules-notification-tokens');
+const buildModulesStatusTokens = require('./builders/modules-status-tokens');
 
 async function build() {
   reporter.info('Building scss files for themes...');
@@ -69,13 +70,19 @@ async function build() {
         return buildModulesNotificationTokens();
       },
     },
+    {
+      filepath: path.join(GENERATED_SCSS_DIR, '_status-tokens.scss'),
+      builder() {
+        return buildModulesStatusTokens();
+      },
+    },
   ];
 
   for (const { filepath, builder } of files) {
     await fs.ensureFile(filepath);
 
     const { code } = generate(builder());
-    await fs.writeFile(filepath, code);
+    await fs.writeFile(filepath, await code);
   }
 
   reporter.success('Done! 🎉');

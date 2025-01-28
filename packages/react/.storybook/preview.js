@@ -1,28 +1,75 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import {
+  Title,
+  Subtitle,
+  Description,
+  Primary,
+  Stories,
+  ArgTypes,
+} from '@storybook/blocks';
 
 import './styles.scss';
 import '../src/feature-flags';
 
-import { configureActions } from '@storybook/addon-actions';
 import { white, g10, g90, g100 } from '@carbon/themes';
 import React from 'react';
 import { breakpoints } from '@carbon/layout';
 import { GlobalTheme } from '../src/components/Theme';
+import { Layout } from '../src/components/Layout';
+import { TextDirection } from '../src/components/Text';
 
 import theme from './theme';
 
-export const globalTypes = {
+const devTools = {
+  layoutSize: {
+    description: "Set the layout context's size",
+    defaultValue: false,
+    toolbar: {
+      title: 'dev :: unstable__Layout size',
+      items: [
+        {
+          value: false,
+          title: 'None',
+        },
+        'xs',
+        'sm',
+        'md',
+        'lg',
+        'xl',
+        '2xl',
+      ],
+    },
+  },
+  layoutDensity: {
+    description: "Set the layout context's density",
+    defaultValue: false,
+    toolbar: {
+      title: 'dev :: unstable__Layout density',
+      items: [
+        {
+          value: false,
+          title: 'None',
+        },
+        'condensed',
+        'normal',
+      ],
+    },
+  },
+};
+
+const globalTypes = {
   locale: {
     name: 'Locale',
     description: 'Set the localization for the storybook',
     defaultValue: 'en',
     toolbar: {
       icon: 'globe',
+      title: 'Locale',
       items: [
         {
           right: '🇺🇸',
@@ -37,18 +84,65 @@ export const globalTypes = {
       ],
     },
   },
+  dir: {
+    name: 'Text direction',
+    description: 'Set the text direction for the story',
+    defaultValue: 'ltr',
+    toolbar: {
+      icon: 'transfer',
+      title: 'Text direction',
+      items: [
+        {
+          right: '🔄',
+          title: 'auto',
+          value: 'auto',
+        },
+        {
+          right: '➡️',
+          title: 'left-to-right (ltr)',
+          value: 'ltr',
+        },
+        {
+          right: '⬅️',
+          title: 'right-to-left (rtl)',
+          value: 'rtl',
+        },
+      ],
+    },
+  },
   theme: {
     name: 'Theme',
     description: 'Set the global theme for displaying components',
     defaultValue: 'white',
     toolbar: {
       icon: 'paintbrush',
+      title: 'Theme',
       items: ['white', 'g10', 'g90', 'g100'],
     },
   },
+  ...(process.env.NODE_ENV === 'development' ? devTools : {}),
 };
 
-export const parameters = {
+const parameters = {
+  a11y: {
+    // Can specify engine as "axe" or "accessibility-checker" (axe default)
+    engine: 'accessibility-checker',
+    config: {
+      rules: [
+        {
+          // To disable a rule across all stories, set `enabled` to `false`.
+          // Use with caution: all violations of this rule will be ignored!
+          id: 'html_lang_exists',
+          enabled: false,
+        },
+        { id: 'page_title_exists', enabled: false },
+        { id: 'skip_main_exists', enabled: false },
+        { id: 'html_skipnav_exists', enabled: false },
+        { id: 'aria_content_in_landmark', enabled: false },
+        { id: 'aria_child_tabbable', enabled: false },
+      ],
+    },
+  },
   backgrounds: {
     // https://storybook.js.org/docs/react/essentials/backgrounds#grid
     grid: {
@@ -91,6 +185,16 @@ export const parameters = {
   },
   docs: {
     theme,
+    page: () => (
+      <>
+        <Title />
+        <Subtitle />
+        <Description />
+        <Primary />
+        <ArgTypes />
+        <Stories includePrimary={false} />
+      </>
+    ),
   },
   // Small (<672)
   // Medium (672 - 1056px)
@@ -138,37 +242,62 @@ export const parameters = {
   },
   options: {
     storySort: (storyA, storyB) => {
-      // By default, sort by the story "kind". The "kind" refers to the
-      // top-level title of the story, either through Component Story Format
-      // with the default export, or the `storiesOf('kind', module)` format
-      if (storyA[1].kind !== storyB[1].kind) {
-        return storyA[1].kind.localeCompare(storyB[1].kind);
+      const idA = storyA.id;
+      const idB = storyB.id;
+      const titleA = storyA.title;
+      const titleB = storyB.title;
+
+      if (idA.includes('welcome')) {
+        return -1;
+      }
+      if (idB.includes('welcome')) {
+        return 1;
       }
 
-      const idA = storyA[0];
-      const idB = storyB[0];
+      // By default, sort by the top-level title of the story
+      if (titleA !== titleB) {
+        if (idA.includes('overview') && !idB.includes('overview')) {
+          return -1;
+        }
+        if (idB.includes('overview') && !idA.includes('overview')) {
+          return 1;
+        }
+        return titleA.localeCompare(titleB);
+      }
 
-      // To story the stories, we first build up a list of matches based on
+      if (titleA !== titleB) {
+        if (idA.includes('flag-details') && !idB.includes('flag-details')) {
+          return -1;
+        }
+        if (idB.includes('flag-details') && !idA.includes('flag-details')) {
+          return 1;
+        }
+        return titleA.localeCompare(titleB);
+      }
+
+      // To sort the stories, we first build up a list of matches based on
       // keywords. Each keyword has a specific weight that will be used to
       // determine order later on.
-      const UNKNOWN_KEYWORD = 3;
+      const UNKNOWN_KEYWORD = 5;
       const keywords = new Map([
         ['welcome', 0],
-        ['default', 1],
-        ['usage', 2],
-        ['playground', 4],
-        ['development', 5],
-        ['deprecated', 6],
-        ['unstable', 7],
+        ['overview', 1],
+        ['default', 2],
+        ['usage', 3],
+        ['flag-details', 4],
+        ['playground', 6],
+        ['development', 7],
+        ['deprecated', 8],
+        ['unstable', 9],
       ]);
       const matches = new Map();
 
       // We use this list of keywords to determine a collection of matches. By
       // default, we will look for the greatest valued matched
       for (const [keyword, weight] of keywords) {
-        // If we already have a match for a given id that is greater than the
+        // If we already have a match for a given id that is lesser than the
         // specific keyword we're looking for, break early
-        if (matches.get(idA) > weight || matches.get(idB) > weight) {
+        if (matches.get(idA) < weight || matches.get(idB) < weight) {
           break;
         }
 
@@ -203,27 +332,41 @@ export const parameters = {
   },
 };
 
-configureActions({
-  depth: 3,
-  limit: 10,
-});
-
-export const decorators = [
+const decorators = [
   (Story, context) => {
-    const { locale, theme } = context.globals;
+    const { layoutDensity, layoutSize, locale, dir, theme } = context.globals;
+    const [randomKey, setRandomKey] = React.useState(1);
 
     React.useEffect(() => {
       document.documentElement.setAttribute('data-carbon-theme', theme);
     }, [theme]);
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
       document.documentElement.lang = locale;
-    }, [locale]);
+      document.documentElement.dir = dir;
+      // Need to set random key to recalculate Popover coordinates
+      setRandomKey(Math.floor(Math.random() * 10));
+    }, [locale, dir]);
 
     return (
       <GlobalTheme theme={theme}>
-        <Story {...context} />
+        <Layout size={layoutSize || null} density={layoutDensity || null}>
+          <TextDirection
+            getTextDirection={(text) => {
+              return dir;
+            }}>
+            <Story key={randomKey} {...context} />
+          </TextDirection>
+        </Layout>
       </GlobalTheme>
     );
   },
 ];
+
+const preview = {
+  parameters,
+  decorators,
+  globalTypes,
+};
+
+export default preview;

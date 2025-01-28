@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,8 @@ import React from 'react';
 import CopyButton from '../CopyButton';
 
 jest.useFakeTimers();
+const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+const prefix = 'cds';
 
 describe('CopyButton', () => {
   it('should set tabIndex if one is passed via props', () => {
@@ -48,10 +50,10 @@ describe('Button props', () => {
       />
     );
 
-    expect(screen.getByTestId('copy-btn-3')).toHaveAttribute('disabled');
+    expect(screen.getByTestId('copy-btn-3')).toBeDisabled();
   });
 
-  it('should call the click handler', () => {
+  it('should call the click handler', async () => {
     const onClick = jest.fn();
 
     render(
@@ -62,30 +64,31 @@ describe('Button props', () => {
       />
     );
     const button = screen.getByTestId('copy-btn-4');
-    userEvent.click(button);
+    await user.click(button);
     expect(onClick).toHaveBeenCalled();
   });
 });
 
 describe('Feedback', () => {
-  it('should make the feedback visible for a limited amount of time', () => {
+  it('should make the feedback visible for a limited amount of time', async () => {
     render(
       <CopyButton iconDescription="icon description" data-testid="copy-btn-5" />
     );
 
     const button = screen.getByTestId('copy-btn-5');
-    userEvent.click(button);
+    await user.click(button);
 
-    expect(button).toHaveClass('cds--copy-btn--animating');
+    expect(button).toHaveClass(`${prefix}--copy-btn--animating`);
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     act(() => {
       jest.runAllTimers();
       fireEvent.animationEnd(screen.getByTestId('copy-btn-5'), {
-        animationName: 'hide-feedback',
+        animationName: `${prefix}--hide-feedback`,
       });
     });
   });
 
-  it('should be able to specify the feedback message', () => {
+  it('should be able to specify the feedback message', async () => {
     render(
       <CopyButton
         iconDescription="icon description"
@@ -95,12 +98,11 @@ describe('Feedback', () => {
     );
 
     const button = screen.getByTestId('copy-btn-6');
-    userEvent.click(button);
-    // returns array of 2 for visible tooltip text and assistive text
-    expect(screen.getAllByText('custom-feedback').length).toBe(2);
+    await user.click(button);
+    expect(screen.getAllByText('custom-feedback').length).toBe(1);
   });
 
-  it('should allow users to override default feedback timeout via prop', () => {
+  it('should allow users to override default feedback timeout via prop', async () => {
     render(
       <CopyButton
         iconDescription="icon description"
@@ -110,13 +112,14 @@ describe('Feedback', () => {
     );
 
     const button = screen.getByTestId('copy-btn-7');
-    userEvent.click(button);
+    await user.click(button);
 
-    expect(button).toHaveClass('cds--copy-btn--animating');
+    expect(button).toHaveClass(`${prefix}--copy-btn--animating`);
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     act(() => {
       jest.runAllTimers();
       fireEvent.animationEnd(screen.getByTestId('copy-btn-7'), {
-        animationName: 'hide-feedback',
+        animationName: `${prefix}--hide-feedback`,
       });
     });
   });

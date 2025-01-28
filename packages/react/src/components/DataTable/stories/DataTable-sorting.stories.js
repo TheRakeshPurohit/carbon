@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,11 +37,11 @@ export default {
   },
 };
 
-export const Default = () => (
-  <DataTable rows={rows} headers={headers} isSortable>
+export const Default = (args) => (
+  <DataTable isSortable rows={rows} headers={headers} {...args}>
     {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
       <TableContainer title="DataTable" description="With sorting">
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
               {headers.map((header) => (
@@ -66,36 +66,7 @@ export const Default = () => (
   </DataTable>
 );
 
-export const Playground = (args) => (
-  <DataTable rows={rows} headers={headers} {...args}>
-    {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
-      <TableContainer title="DataTable" description="With sorting">
-        <Table {...getTableProps()}>
-          <TableHead>
-            <TableRow>
-              {headers.map((header) => (
-                <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                  {header.header}
-                </TableHeader>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id} {...getRowProps({ row })}>
-                {row.cells.map((cell) => (
-                  <TableCell key={cell.id}>{cell.value}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    )}
-  </DataTable>
-);
-
-Playground.argTypes = {
+Default.argTypes = {
   filterRows: {
     table: {
       disable: true,
@@ -107,6 +78,11 @@ Playground.argTypes = {
     },
   },
   overflowMenuOnHover: {
+    table: {
+      disable: true,
+    },
+  },
+  radio: {
     table: {
       disable: true,
     },

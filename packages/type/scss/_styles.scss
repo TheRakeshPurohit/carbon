@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2018, 2018
+// Copyright IBM Corp. 2018, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -14,6 +14,28 @@
 @use 'prefix' as *;
 @use 'font-family';
 @use 'scale';
+
+/// @type Map
+/// @access public
+/// @deprecated
+/// @group @carbon/type
+$caption-01: (
+  font-size: scale.type-scale(1),
+  font-weight: font-family.font-weight('regular'),
+  line-height: 1.33333,
+  letter-spacing: 0.32px,
+) !default;
+
+/// @type Map
+/// @access public
+/// @deprecated
+/// @group @carbon/type
+$caption-02: (
+  font-size: scale.type-scale(2),
+  font-weight: font-family.font-weight('regular'),
+  line-height: 1.28572,
+  letter-spacing: 0.32px,
+) !default;
 
 /// @type Map
 /// @access public
@@ -70,8 +92,8 @@ $helper-text-01: (
 /// @deprecated
 /// @group @carbon/type
 $helper-text-02: (
-  font-size: carbon--type-scale(2),
-  font-weight: carbon--font-weight('regular'),
+  font-size: scale.type-scale(2),
+  font-weight: font-family.font-weight('regular'),
   line-height: 1.28572,
   letter-spacing: 0.16px,
 ) !default;
@@ -639,6 +661,8 @@ $fluid-display-04: $display-04 !default;
 /// @access public
 /// @group @carbon/type
 $tokens: (
+  caption-01: $caption-01,
+  caption-02: $caption-02,
   label-01: $label-01,
   label-02: $label-02,
   helper-text-01: $helper-text-01,
@@ -696,7 +720,7 @@ $tokens: (
   fluid-display-02: $fluid-display-02,
   fluid-display-03: $fluid-display-03,
   fluid-display-04: $fluid-display-04,
-);
+) !default;
 
 /// @param {Map} $map
 /// @access public

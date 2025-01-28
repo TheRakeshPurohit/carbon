@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,10 +22,13 @@ const config = {
   ],
 
   // https://playwright.dev/docs/api/class-testconfig#test-config-test-match
-  testMatch: /.*-test.e2e\.m?js$/,
+  testMatch: /.*-test(.avt|.vrt)?.e2e\.m?js$/,
 
   // https://playwright.dev/docs/api/class-testconfig#test-config-timeout
-  timeout: 1000 * 30,
+  timeout: 10000 * 30,
+
+  // https://playwright.dev/docs/test-timeouts
+  expect: { timeout: 100000 },
 
   // https://playwright.dev/docs/api/class-testconfig#test-config-output-dir
   outputDir: path.join(__dirname, '.playwright', 'results'),
@@ -47,11 +50,26 @@ const config = {
     },
   ],
   reporter: [
-    ['line'],
+    // Dot reporter is used in CI because it's very concise - it only produces a
+    // single character per successful test run.
+    [process.env.CI ? 'dot' : 'line'],
+
+    // The remaining reporters should always be used, in both CI and dev.
+    ['blob'],
     [
       'json',
       {
         outputFile: path.join(__dirname, '.playwright', 'results.json'),
+      },
+    ],
+    [
+      'json',
+      {
+        outputFile: path.join(
+          __dirname,
+          'packages/react/.playwright',
+          'INTERNAL_AVT_REPORT_DO_NOT_USE.json'
+        ),
       },
     ],
   ],
@@ -64,12 +82,16 @@ expect.extend({
     if (!aChecker) {
       aChecker = require('accessibility-checker');
       const denylist = new Set([
-        'WCAG20_Html_HasLang',
-        'WCAG20_Doc_HasTitle',
-        'WCAG20_Body_FirstASkips_Native_Host_Sematics',
-        'RPT_Html_SkipNav',
-        'Rpt_Aria_OrphanedContent_Native_Host_Sematics',
+        'html_lang_exists',
+        'page_title_exists',
+        'skip_main_exists',
+        'html_skipnav_exists',
+        'aria_content_in_landmark',
+        'aria_child_tabbable',
+        'label_name_visible',
+        'target_spacing_sufficient',
       ]);
+
       const ruleset = await aChecker.getRuleset('IBM_Accessibility');
       const customRuleset = JSON.parse(JSON.stringify(ruleset));
 
@@ -95,6 +117,45 @@ expect.extend({
       return {
         pass: false,
         message: () => aChecker.stringifyResults(result.report),
+      };
+    }
+  },
+});
+
+expect.extend({
+  async toContainAStory(page, options) {
+    let pass;
+    try {
+      /**
+       * This isn't a foolproof way to determine that an actual story
+       * has been rendered, but it should determine if a storybook
+       * error page is present or not.
+       */
+      await expect(page.locator('css=.cds--layout')).toBeAttached();
+      pass = true;
+    } catch (e) {
+      pass = false;
+    }
+
+    if (pass) {
+      return {
+        pass: true,
+      };
+    } else {
+      return {
+        pass: false,
+        message:
+          () => `An element with the "cds--layout" class was not found at url:
+          ${page.url()}
+
+          The url is probably invalid and does not render a story.
+          Check the url locally, and verify the parameters passed to visitStory are correct.
+
+          component: ${options.component} 
+          story: ${options.story} 
+          id: ${options.id} 
+          globals: ${JSON.stringify(options.globals)} 
+          args: ${JSON.stringify(options.args)}`,
       };
     }
   },

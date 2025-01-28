@@ -18,30 +18,39 @@ instead:
 yarn add @carbon/grid
 ```
 
+You can then include the grid by doing the following in your Sass files:
+
+```
+@use '@carbon/grid';
+
+// Emit the flex-grid styles
+@include grid.flex-grid();
+```
+
 ## Usage
 
 _More examples and documentation can be found on this
-[live demo website](https://carbon-elements.netlify.com/grid/examples/preview/)._
+[live demo website](https://carbon-elements.netlify.app/grid/examples/preview/)._
 
 `@carbon/grid` has three primitive class types to use in order to structure your
 application. They include:
 
-- `bx--grid`, defines the overall grid context and sets some useful attributes
+- `cds--grid`, defines the overall grid context and sets some useful attributes
   like width and margin
-- `bx--row`, defines a row of items in a grid
-- `bx--col`, used to define individual columns
+- `cds--row`, defines a row of items in a grid
+- `cds--col`, used to define individual columns
 
 You can use a combination of these classes to build a layout. For example, if we
 wanted a 4 column layout for a small breakpoint we could use the following
 markup:
 
 ```html
-<div class="bx--grid">
-  <div class="bx--row">
-    <div class="bx--col">1/4</div>
-    <div class="bx--col">1/4</div>
-    <div class="bx--col">1/4</div>
-    <div class="bx--col">1/4</div>
+<div class="cds--grid">
+  <div class="cds--row">
+    <div class="cds--col">1/4</div>
+    <div class="cds--col">1/4</div>
+    <div class="cds--col">1/4</div>
+    <div class="cds--col">1/4</div>
   </div>
 </div>
 ```
@@ -56,17 +65,17 @@ one in combination with a column to specify the number of columns to span at a
 given breakpoint. For example, we could rewrite the above example to be:
 
 ```html
-<div class="bx--grid">
-  <div class="bx--row">
-    <div class="bx--col-sm-1">1/4</div>
-    <div class="bx--col-sm-1">1/4</div>
-    <div class="bx--col-sm-1">1/4</div>
-    <div class="bx--col-sm-1">1/4</div>
+<div class="cds--grid">
+  <div class="cds--row">
+    <div class="cds--col-sm-1">1/4</div>
+    <div class="cds--col-sm-1">1/4</div>
+    <div class="cds--col-sm-1">1/4</div>
+    <div class="cds--col-sm-1">1/4</div>
   </div>
 </div>
 ```
 
-The `.bx--col-sm-1` class names tells us that this `<div>` should only span one
+The `.cds--col-sm-1` class names tells us that this `<div>` should only span one
 column at our `sm` breakpoint. By default, as we scale beyond the breakpoint the
 layout will still take up a percentage of the overall width.
 
@@ -86,3 +95,12 @@ check out our [Contributing Guide](/.github/CONTRIBUTING.md)! 👀
 ## 📝 License
 
 Licensed under the [Apache 2.0 License](/LICENSE).
+
+## <picture><source height="20" width="20" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-dark.svg"><source height="20" width="20" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"><img height="20" width="20" alt="IBM Telemetry" src="https://raw.githubusercontent.com/ibm-telemetry/telemetry-js/main/docs/images/ibm-telemetry-light.svg"></picture> IBM Telemetry
+
+This package uses IBM Telemetry to collect de-identified and anonymized metrics
+data. By installing this package as a dependency you are agreeing to telemetry
+collection. To opt out, see
+[Opting out of IBM Telemetry data collection](https://github.com/ibm-telemetry/telemetry-js/tree/main#opting-out-of-ibm-telemetry-data-collection).
+For more information on the data being collected, please see the
+[IBM Telemetry documentation](https://github.com/ibm-telemetry/telemetry-js/tree/main#ibm-telemetry-collection-basics).

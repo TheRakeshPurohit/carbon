@@ -1,20 +1,28 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 import React from 'react';
+
+import { WithLayer } from '../../../.storybook/templates/WithLayer';
 import ContentSwitcher from './ContentSwitcher';
-import Switch from '../Switch';
-import { Layer } from '../Layer';
+import { Switch, IconSwitch } from '../Switch';
 import mdx from './ContentSwitcher.mdx';
+import {
+  TableOfContents,
+  Workspace,
+  ViewMode_2,
+  Icon,
+} from '@carbon/icons-react';
 
 export default {
   title: 'Components/ContentSwitcher',
   component: ContentSwitcher,
   subcomponents: {
+    IconSwitch,
     Switch,
   },
   argTypes: {
@@ -31,58 +39,12 @@ export default {
   },
 };
 
-export const Default = () => (
-  <ContentSwitcher onChange={() => {}}>
-    <Switch name="one" text="First section" />
-    <Switch name="two">Second section</Switch>
-    <Switch name="three" text="Third section" />
-  </ContentSwitcher>
-);
-
-export const WithLayer = () => {
-  return (
-    <>
-      <ContentSwitcher onChange={() => {}}>
-        <Switch name="one" text="First section" />
-        <Switch name="two" text="Second section" />
-        <Switch name="three" text="Third section" />
-      </ContentSwitcher>
-      <Layer>
-        <ContentSwitcher onChange={() => {}}>
-          <Switch name="one" text="First section" />
-          <Switch name="two" text="Second section" />
-          <Switch name="three" text="Third section" />
-        </ContentSwitcher>
-        <Layer>
-          <ContentSwitcher onChange={() => {}}>
-            <Switch name="one" text="First section" />
-            <Switch name="two" text="Second section" />
-            <Switch name="three" text="Third section" />
-          </ContentSwitcher>
-        </Layer>
-      </Layer>
-    </>
-  );
-};
-
-export const Playground = (args) => (
-  <ContentSwitcher {...args}>
-    <Switch name="one" text="First section" />
-    <Switch name="two" text="Second section" />
-    <Switch name="three" text="Third section" />
-  </ContentSwitcher>
-);
-
-Playground.argTypes = {
+const sharedArgTypes = {
   children: {
-    table: {
-      disable: true,
-    },
+    control: false,
   },
   className: {
-    table: {
-      disable: true,
-    },
+    control: false,
   },
   onChange: {
     action: 'onChange',
@@ -90,4 +52,68 @@ Playground.argTypes = {
   size: {
     options: ['sm', 'md', 'lg'],
   },
+};
+
+export const Default = (args) => (
+  <ContentSwitcher {...args}>
+    <Switch name="one" text="First section" />
+    <Switch name="two" text="Second section" />
+    <Switch name="three" text="Third section" />
+  </ContentSwitcher>
+);
+
+Default.argTypes = {
+  ...sharedArgTypes,
+};
+
+export const _WithLayer = (args) => (
+  <WithLayer>
+    <ContentSwitcher onChange={() => {}} {...args}>
+      <Switch name="one" text="First section" />
+      <Switch name="two" text="Second section" />
+      <Switch name="three" text="Third section" />
+    </ContentSwitcher>
+  </WithLayer>
+);
+
+_WithLayer.argTypes = {
+  ...sharedArgTypes,
+};
+
+export const IconOnly = (args) => (
+  <ContentSwitcher onChange={() => {}} {...args}>
+    <IconSwitch name="one" text="Table of Contents">
+      <TableOfContents />
+    </IconSwitch>
+    <IconSwitch name="two" text="Workspace Test">
+      <Workspace />
+    </IconSwitch>
+    <IconSwitch name="three" text="View Mode">
+      <ViewMode_2 />
+    </IconSwitch>
+  </ContentSwitcher>
+);
+
+IconOnly.argTypes = {
+  ...sharedArgTypes,
+};
+
+export const IconOnlyWithLayer = (args) => (
+  <WithLayer>
+    <ContentSwitcher onChange={() => {}} {...args}>
+      <IconSwitch name="one" text="Table of Contents">
+        <TableOfContents />
+      </IconSwitch>
+      <IconSwitch name="two" text="Workspace Test">
+        <Workspace />
+      </IconSwitch>
+      <IconSwitch name="three" text="View Mode">
+        <ViewMode_2 />
+      </IconSwitch>
+    </ContentSwitcher>
+  </WithLayer>
+);
+
+IconOnlyWithLayer.argTypes = {
+  ...sharedArgTypes,
 };

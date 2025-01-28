@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,11 @@ import {
   blue40,
   blue60,
   blue70,
+  blue80,
 
   // Gray
   gray10,
+  gray10Hover,
   gray30,
   gray40,
   gray50,
@@ -22,7 +24,9 @@ import {
   gray70,
   gray70Hover,
   gray80,
+  gray80Hover,
   gray90,
+  gray90Hover,
   gray100,
 
   // Support
@@ -37,6 +41,7 @@ import {
   red60,
   purple40,
   purple50,
+  purple60,
 
   // Constants
   white,
@@ -44,9 +49,6 @@ import {
 
   // Tools
   rgba,
-  gray90Hover,
-  gray10Hover,
-  gray80Hover,
 } from '@carbon/colors';
 import { adjustAlpha } from './tools';
 
@@ -119,12 +121,12 @@ export const fieldHover03 = gray60Hover;
 export const borderSubtle00 = gray70;
 
 // border-subtle-01
-export const borderSubtle01 = gray70;
-export const borderSubtleSelected01 = gray60;
+export const borderSubtle01 = gray60;
+export const borderSubtleSelected01 = gray50;
 
 // border-subtle-02
-export const borderSubtle02 = gray60;
-export const borderSubtleSelected02 = gray50;
+export const borderSubtle02 = gray50;
+export const borderSubtleSelected02 = gray40;
 
 // border-subtle-03
 export const borderSubtle03 = gray50;
@@ -134,6 +136,11 @@ export const borderSubtleSelected03 = gray40;
 export const borderStrong01 = gray50;
 export const borderStrong02 = gray40;
 export const borderStrong03 = gray30;
+
+// border-tile
+export const borderTile01 = gray60;
+export const borderTile02 = gray50;
+export const borderTile03 = gray40;
 
 // border-inverse
 export const borderInverse = gray10;
@@ -161,6 +168,7 @@ export const linkPrimaryHover = blue30;
 export const linkSecondary = blue30;
 export const linkInverse = blue60;
 export const linkVisited = purple40;
+export const linkInverseVisited = purple60;
 export const linkInverseActive = gray100;
 export const linkInverseHover = blue70;
 
@@ -171,6 +179,7 @@ export const iconInverse = gray100;
 export const iconOnColor = white;
 export const iconOnColorDisabled = adjustAlpha(iconOnColor, 0.25);
 export const iconDisabled = adjustAlpha(iconPrimary, 0.25);
+export const iconInteractive = white;
 
 // Support
 export const supportError = red40;
@@ -196,10 +205,64 @@ export const skeletonElement = gray70;
 
 // Misc
 export const interactive = blue50;
-export const highlight = blue70;
+export const highlight = blue80;
 export const overlay = rgba(black, 0.65);
 export const toggleOff = gray50;
 export const shadow = rgba(black, 0.8);
+
+//// AI - Experimental (Use at your own risk)
+//// Phase 2 - new \\\\
+// Shared
+export const aiInnerShadow = rgba(blue50, 0.16);
+export const aiAuraStartSm = rgba(blue50, 0.16);
+export const aiAuraStart = rgba(blue50, 0.1);
+export const aiAuraEnd = rgba(black, 0);
+export const aiBorderStrong = blue40;
+export const aiBorderStart = rgba(blue30, 0.36);
+export const aiBorderEnd = blue50;
+export const aiDropShadow = rgba(black, 0.28);
+export const aiAuraHoverBackground = layerHover01;
+export const aiAuraHoverStart = rgba(blue50, 0.4);
+export const aiAuraHoverEnd = rgba(black, 0);
+
+// AI Popover
+export const aiPopoverBackground = gray100;
+export const aiPopoverShadowOuter01 = rgba(black, 0.12);
+export const aiPopoverShadowOuter02 = rgba(black, 0.08);
+
+// AI skeleton
+export const aiSkeletonBackground = rgba(blue40, 0.5);
+export const aiSkeletonElementBackground = rgba(blue40, 0.3);
+
+// AI Modal tokens
+export const aiOverlay = rgba(black, 0.5);
+
+// One off tokens for caret
+export const aiPopoverCaretCenter = '#4870B5';
+export const aiPopoverCaretBottom = blue50;
+export const aiPopoverCaretBottomBackgroundActions = '#1E283A';
+export const aiPopoverCaretBottomBackground = '#202D45';
+
+// Chat tokens
+export const chatPromptBackground = gray100;
+export const chatPromptBorderStart = gray90;
+export const chatPromptBorderEnd = rgba(gray90, 0);
+export const chatBubbleUser = gray80;
+export const chatBubbleAgent = gray90;
+export const chatBubbleBorder = gray70;
+export const chatAvatarBot = gray50;
+export const chatAvatarAgent = gray30;
+export const chatAvatarUser = blue50;
+export const chatShellBackground = gray90;
+export const chatHeaderBackground = gray90;
+
+// Chat button tokens
+export const chatButton = linkPrimary;
+export const chatButtonHover = backgroundHover;
+export const chatButtonTextHover = linkPrimaryHover;
+export const chatButtonActive = backgroundActive;
+export const chatButtonSelected = backgroundSelected;
+export const chatButtonTextSelected = textSecondary;
 
 export {
   // Type
@@ -272,4 +335,13 @@ export {
   // Icon sizes
   iconSize01,
   iconSize02,
+  // Layout
+  // Deprecated ☠️
+  layout01,
+  layout02,
+  layout03,
+  layout04,
+  layout05,
+  layout06,
+  layout07,
 } from './white';

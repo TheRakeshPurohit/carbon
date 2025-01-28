@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,9 @@
 
 'use strict';
 
-const { expect, test } = require('@playwright/test');
+const { test } = require('@playwright/test');
 const { themes } = require('../../test-utils/env');
-const { snapshotStory, visitStory } = require('../../test-utils/storybook');
+const { snapshotStory } = require('../../test-utils/storybook');
 
 test.describe('Tile', () => {
   themes.forEach((theme) => {
@@ -101,28 +101,80 @@ test.describe('Tile', () => {
           theme,
         });
       });
-    });
-  });
 
-  test('accessibility-checker @avt', async ({ page }) => {
-    await visitStory(page, {
-      component: 'Tile',
-      id: 'components-tile--default',
-      globals: {
-        theme: 'white',
-      },
-    });
-    await expect(page).toHaveNoACViolations('Tile');
-  });
+      test('feature flags clickable @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--clickable',
+          theme,
+        });
+      });
 
-  test('accessibility-checker selectable tile @avt', async ({ page }) => {
-    await visitStory(page, {
-      component: 'SelectableTile',
-      id: 'components-tile--selectable',
-      globals: {
-        theme: 'white',
-      },
+      test('feature flags clickable with layer @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--clickable-with-layer',
+          theme,
+        });
+      });
+
+      test('feature flags selectable @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--selectable',
+          theme,
+        });
+      });
+
+      test('feature flags multi select @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--multi-select',
+          theme,
+        });
+      });
+
+      test('feature flags radio @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--radio',
+          theme,
+        });
+      });
+
+      test('feature flags radio with layer @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--radio-with-layer',
+          theme,
+        });
+      });
+
+      test('feature flags expandable @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--expandable',
+          theme,
+        });
+      });
+
+      test('feature flags expandable with interactive @vrt', async ({
+        page,
+      }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--expandable-with-interactive',
+          theme,
+        });
+      });
+
+      test('feature flags expandable with layer @vrt', async ({ page }) => {
+        await snapshotStory(page, {
+          component: 'Tile',
+          id: 'components-tile-feature-flag--expandable-with-layer',
+          theme,
+        });
+      });
     });
-    await expect(page).toHaveNoACViolations('SelectableTile');
   });
 });

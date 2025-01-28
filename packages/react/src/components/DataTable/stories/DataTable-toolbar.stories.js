@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2020
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,8 +47,21 @@ export default {
   },
 };
 
-export const Default = () => (
-  <DataTable rows={rows} headers={headers}>
+const sharedArgTypes = {
+  size: {
+    options: ['xs', 'sm', 'md', 'lg', 'xl'],
+    control: { type: 'select' },
+  },
+  useZebraStyles: {
+    control: { type: 'boolean' },
+  },
+  isSortable: { control: { type: 'boolean' } },
+  persistent: { control: { type: 'boolean' } },
+  radio: { table: { disable: true } },
+};
+
+export const Default = (args) => (
+  <DataTable rows={rows} headers={headers} {...args}>
     {({
       rows,
       headers,
@@ -66,7 +79,7 @@ export const Default = () => (
         <TableToolbar {...getToolbarProps()} aria-label="data table toolbar">
           <TableToolbarContent>
             <TableToolbarSearch onChange={onInputChange} />
-            <TableToolbarMenu light>
+            <TableToolbarMenu>
               <TableToolbarAction onClick={action('Action 1 Click')}>
                 Action 1
               </TableToolbarAction>
@@ -80,7 +93,7 @@ export const Default = () => (
             <Button onClick={action('Button click')}>Primary Button</Button>
           </TableToolbarContent>
         </TableToolbar>
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
               {headers.map((header) => (
@@ -105,8 +118,10 @@ export const Default = () => (
   </DataTable>
 );
 
-export const PersistentToolbar = () => (
-  <DataTable rows={rows} headers={headers}>
+Default.argTypes = { ...sharedArgTypes };
+
+export const PersistentToolbar = (args) => (
+  <DataTable rows={rows} headers={headers} {...args}>
     {({
       rows,
       headers,
@@ -124,7 +139,7 @@ export const PersistentToolbar = () => (
         <TableToolbar {...getToolbarProps()} aria-label="data table toolbar">
           <TableToolbarContent>
             <TableToolbarSearch onChange={onInputChange} persistent />
-            <TableToolbarMenu light>
+            <TableToolbarMenu>
               <TableToolbarAction onClick={action('Action 1 Click')}>
                 Action 1
               </TableToolbarAction>
@@ -138,7 +153,7 @@ export const PersistentToolbar = () => (
             <Button onClick={action('Button click')}>Primary Button</Button>
           </TableToolbarContent>
         </TableToolbar>
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
               {headers.map((header) => (
@@ -163,8 +178,10 @@ export const PersistentToolbar = () => (
   </DataTable>
 );
 
-export const SmallPersistentToolbar = () => (
-  <DataTable rows={rows} headers={headers}>
+PersistentToolbar.argTypes = { ...sharedArgTypes };
+
+export const SmallPersistentToolbar = (args) => (
+  <DataTable rows={rows} headers={headers} {...args}>
     {({
       rows,
       headers,
@@ -185,7 +202,7 @@ export const SmallPersistentToolbar = () => (
           size="sm">
           <TableToolbarContent>
             <TableToolbarSearch onChange={onInputChange} persistent size="sm" />
-            <TableToolbarMenu light size="sm">
+            <TableToolbarMenu size="sm">
               <TableToolbarAction onClick={action('Action 1 Click')}>
                 Action 1
               </TableToolbarAction>
@@ -199,7 +216,7 @@ export const SmallPersistentToolbar = () => (
             <Button onClick={action('Button click')}>Primary Button</Button>
           </TableToolbarContent>
         </TableToolbar>
-        <Table {...getTableProps()} size="sm">
+        <Table {...getTableProps()} size="sm" aria-label="sample table">
           <TableHead>
             <TableRow>
               {headers.map((header) => (
@@ -224,69 +241,9 @@ export const SmallPersistentToolbar = () => (
   </DataTable>
 );
 
-export const WithOverflowMenu = () => (
-  <DataTable rows={rows} headers={headers}>
-    {({
-      rows,
-      headers,
-      getHeaderProps,
-      getRowProps,
-      getTableProps,
-      getToolbarProps,
-      onInputChange,
-    }) => (
-      <TableContainer title="DataTable" description="With overflow menu">
-        <TableToolbar {...getToolbarProps()} aria-label="data table toolbar">
-          <TableToolbarContent>
-            <TableToolbarSearch onChange={onInputChange} />
-            <TableToolbarMenu light>
-              <TableToolbarAction onClick={action('Action 1 Click')}>
-                Action 1
-              </TableToolbarAction>
-              <TableToolbarAction onClick={action('Action 2 Click')}>
-                Action 2
-              </TableToolbarAction>
-              <TableToolbarAction onClick={action('Action 3 Click')}>
-                Action 3
-              </TableToolbarAction>
-            </TableToolbarMenu>
-            <Button onClick={action('Button click')}>Primary Button</Button>
-          </TableToolbarContent>
-        </TableToolbar>
-        <Table {...getTableProps()}>
-          <TableHead>
-            <TableRow>
-              {headers.map((header) => (
-                <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                  {header.header}
-                </TableHeader>
-              ))}
-              <TableHeader />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id} {...getRowProps({ row })}>
-                {row.cells.map((cell) => (
-                  <TableCell key={cell.id}>{cell.value}</TableCell>
-                ))}
-                <TableCell className="cds--table-column-menu">
-                  <OverflowMenu size="sm" light flipped>
-                    <OverflowMenuItem>Action 1</OverflowMenuItem>
-                    <OverflowMenuItem>Action 2</OverflowMenuItem>
-                    <OverflowMenuItem>Action 3</OverflowMenuItem>
-                  </OverflowMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    )}
-  </DataTable>
-);
+SmallPersistentToolbar.argTypes = { ...sharedArgTypes };
 
-export const Playground = (args) => (
+export const WithOverflowMenu = (args) => (
   <DataTable rows={rows} headers={headers} {...args}>
     {({
       rows,
@@ -301,7 +258,7 @@ export const Playground = (args) => (
         <TableToolbar {...getToolbarProps()} aria-label="data table toolbar">
           <TableToolbarContent>
             <TableToolbarSearch onChange={onInputChange} />
-            <TableToolbarMenu light>
+            <TableToolbarMenu>
               <TableToolbarAction onClick={action('Action 1 Click')}>
                 Action 1
               </TableToolbarAction>
@@ -315,7 +272,7 @@ export const Playground = (args) => (
             <Button onClick={action('Button click')}>Primary Button</Button>
           </TableToolbarContent>
         </TableToolbar>
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
               {headers.map((header) => (
@@ -323,7 +280,7 @@ export const Playground = (args) => (
                   {header.header}
                 </TableHeader>
               ))}
-              <TableHeader />
+              <TableHeader aria-label="overflow actions" />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -334,9 +291,9 @@ export const Playground = (args) => (
                 ))}
                 <TableCell className="cds--table-column-menu">
                   <OverflowMenu size="sm" flipped>
-                    <OverflowMenuItem>Action 1</OverflowMenuItem>
-                    <OverflowMenuItem>Action 2</OverflowMenuItem>
-                    <OverflowMenuItem>Action 3</OverflowMenuItem>
+                    <OverflowMenuItem itemText="Stop app" />
+                    <OverflowMenuItem itemText="Restart app" />
+                    <OverflowMenuItem itemText="Rename app" />
                   </OverflowMenu>
                 </TableCell>
               </TableRow>
@@ -348,19 +305,8 @@ export const Playground = (args) => (
   </DataTable>
 );
 
-Playground.argTypes = {
-  size: {
-    options: ['xs', 'sm', 'md', 'lg', 'xl'],
-    control: { type: 'select' },
-  },
-  useZebraStyles: {
-    control: { type: 'boolean' },
-  },
-  radio: {
-    control: { type: 'boolean' },
-  },
-  isSortable: { control: { type: 'boolean' } },
-  persistent: { control: { type: 'boolean' } },
+WithOverflowMenu.argTypes = {
+  ...sharedArgTypes,
   overflowMenuOnHover: {
     control: { type: 'boolean' },
   },

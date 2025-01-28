@@ -1,11 +1,14 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 import React from 'react';
+
+import { WithLayer } from '../../../.storybook/templates/WithLayer';
+
 import FluidTextArea from '../FluidTextArea';
 import FluidTextAreaSkeleton from './FluidTextArea.Skeleton';
 import {
@@ -14,12 +17,14 @@ import {
   ToggletipButton,
   ToggletipContent,
 } from '../Toggletip';
-import { Layer } from '../Layer';
 import { Information } from '@carbon/icons-react';
 
 export default {
-  title: 'Experimental/unstable__FluidTextArea',
+  title: 'Experimental/Fluid Components/unstable__FluidTextArea',
   component: FluidTextArea,
+  subcomponents: {
+    FluidTextAreaSkeleton,
+  },
   argTypes: {
     hideLabel: {
       table: {
@@ -54,46 +59,97 @@ export default {
   },
 };
 
-export const Default = () => (
-  <FluidTextArea
-    labelText="Text Area label"
-    placeholder="Placeholder text"
-    cols={50}
-    rows={4}
-    id="text-area-1"
-  />
+const sharedArgTypes = {
+  className: {
+    control: {
+      type: 'text',
+    },
+  },
+  placeholder: {
+    control: {
+      type: 'text',
+    },
+  },
+  invalid: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  invalidText: {
+    control: {
+      type: 'text',
+    },
+  },
+  disabled: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  enableCounter: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  labelText: {
+    control: {
+      type: 'text',
+    },
+  },
+  maxCount: {
+    control: {
+      type: 'text',
+    },
+  },
+  warn: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  warnText: {
+    control: {
+      type: 'text',
+    },
+  },
+};
+
+export const Default = (args) => (
+  <div style={{ width: args.defaultWidth }}>
+    <FluidTextArea {...args} />
+  </div>
 );
 
+Default.args = {
+  defaultWidth: 300,
+  className: 'test-class',
+  placeholder: 'Placeholder text',
+  invalid: false,
+  invalidText:
+    'Error message that is really long can wrap to more lines but should not be excessively long.',
+  disabled: false,
+  enableCounter: false,
+  labelText: 'Text Area label',
+  maxCount: 500,
+  warn: false,
+  warnText: 'This is a warning message.',
+};
+
+Default.argTypes = {
+  ...sharedArgTypes,
+  defaultWidth: {
+    control: { type: 'range', min: 300, max: 800, step: 50 },
+  },
+};
+
 export const DefaultWithLayers = () => (
-  <>
-    <FluidTextArea
-      labelText="Text Area label"
-      placeholder="Placeholder text"
-      cols={50}
-      rows={4}
-      id="text-area-1"
-    />
-    <br />
-    <Layer>
+  <WithLayer>
+    {(layer) => (
       <FluidTextArea
         labelText="Text Area label"
         placeholder="Placeholder text"
-        cols={50}
-        rows={4}
-        id="text-area-1"
+        id={`text-area-${layer}`}
       />
-      <br />
-      <Layer>
-        <FluidTextArea
-          labelText="Text Area label"
-          placeholder="Placeholder text"
-          cols={50}
-          rows={4}
-          id="text-area-1"
-        />
-      </Layer>
-    </Layer>
-  </>
+    )}
+  </WithLayer>
 );
 
 const ToggleTip = (
@@ -119,65 +175,3 @@ export const Skeleton = () => (
     <FluidTextAreaSkeleton />
   </div>
 );
-
-export const Playground = (args) => (
-  <div style={{ width: args.playgroundWidth }}>
-    <FluidTextArea {...args} />
-  </div>
-);
-
-Playground.argTypes = {
-  playgroundWidth: {
-    control: { type: 'range', min: 300, max: 800, step: 50 },
-    defaultValue: 300,
-  },
-  className: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: 'test-class',
-  },
-  placeholder: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: 'Placeholder text',
-  },
-  invalid: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  invalidText: {
-    control: {
-      type: 'text',
-    },
-    defaultValue:
-      'Error message that is really long can wrap to more lines but should not be excessively long.',
-  },
-  disabled: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  enableCounter: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  labelText: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: 'Text Area label',
-  },
-  maxCount: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: '500',
-  },
-};

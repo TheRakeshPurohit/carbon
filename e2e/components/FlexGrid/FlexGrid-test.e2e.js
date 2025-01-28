@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,9 @@
 
 'use strict';
 
-const { expect, test } = require('@playwright/test');
+const { test } = require('@playwright/test');
 const { themes } = require('../../test-utils/env');
-const { snapshotStory, visitStory } = require('../../test-utils/storybook');
+const { snapshotStory } = require('../../test-utils/storybook');
 
 test.describe('FlexGrid', () => {
   themes.forEach((theme) => {
@@ -17,7 +17,7 @@ test.describe('FlexGrid', () => {
       test('auto columns @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--auto-columns',
+          id: 'elements-flexgrid--auto-columns',
           theme,
         });
       });
@@ -25,7 +25,7 @@ test.describe('FlexGrid', () => {
       test('responsive grid @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--responsive-grid',
+          id: 'elements-flexgrid--responsive-grid',
           theme,
         });
       });
@@ -33,7 +33,7 @@ test.describe('FlexGrid', () => {
       test('offset @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--offset',
+          id: 'elements-flexgrid--offset',
           theme,
         });
       });
@@ -41,7 +41,7 @@ test.describe('FlexGrid', () => {
       test('condensed @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--condensed',
+          id: 'elements-flexgrid--condensed',
           theme,
         });
       });
@@ -49,7 +49,7 @@ test.describe('FlexGrid', () => {
       test('condensed columns @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--condensed-columns',
+          id: 'elements-flexgrid--condensed-columns',
           theme,
         });
       });
@@ -57,7 +57,7 @@ test.describe('FlexGrid', () => {
       test('narrow @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--narrow',
+          id: 'elements-flexgrid--narrow',
           theme,
         });
       });
@@ -65,7 +65,7 @@ test.describe('FlexGrid', () => {
       test('narrow columns @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--narrow-columns',
+          id: 'elements-flexgrid--narrow-columns',
           theme,
         });
       });
@@ -73,29 +73,18 @@ test.describe('FlexGrid', () => {
       test('full width @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--full-width',
+          id: 'elements-flexgrid--full-width',
           theme,
         });
       });
 
-      test('mixed grid modes @vrt', async ({ page }) => {
+      test('mixed gutter modes @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'FlexGrid',
-          id: 'components-flexgrid--mixed-grid-modes',
+          id: 'elements-flexgrid--mixed-gutter-modes',
           theme,
         });
       });
     });
-  });
-
-  test('accessibility-checker @avt', async ({ page }) => {
-    await visitStory(page, {
-      component: 'FlexGrid',
-      id: 'components-flexgrid--auto-columns',
-      globals: {
-        theme: 'white',
-      },
-    });
-    await expect(page).toHaveNoACViolations('FlexGrid');
   });
 });

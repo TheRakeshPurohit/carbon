@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,6 @@ import classnames from 'classnames';
 import FileUploaderItem from '../FileUploaderItem';
 import FileUploaderDropContainer from '../FileUploaderDropContainer';
 import FormItem from '../../FormItem';
-
-// import uid from '../../../tools/uniqueId';
-import '../FileUploader-story.scss';
 
 const prefix = 'cds';
 
@@ -53,7 +50,7 @@ const ExampleDropContainerApp = (props) => {
         iconDescription: 'Delete file',
         invalid: true,
         errorSubject: 'File size exceeds limit',
-        errorBody: '500kb max file size. Select a new file and try again.',
+        errorBody: '500 KB max file size. Select a new file and try again.',
       };
       setFiles((files) =>
         files.map((file) =>
@@ -157,14 +154,18 @@ const ExampleDropContainerApp = (props) => {
     <FormItem>
       <p className={labelClasses}>Upload files</p>
       <p className={helperTextClasses}>
-        Max file size is 500kb. Supported file types are .jpg and .png.
+        Max file size is 500 KB. Supported file types are .jpg and .png.
       </p>
       <FileUploaderDropContainer
         {...props}
         onAddFiles={onAddFiles}
         innerRef={uploaderButton}
       />
-      <div className={`${prefix}--file-container`} style={{ width: '100%' }}>
+      <div
+        className={classnames(
+          `${prefix}--file-container`,
+          `${prefix}--file-container--drop`
+        )}>
         {files.map(
           ({
             uuid,

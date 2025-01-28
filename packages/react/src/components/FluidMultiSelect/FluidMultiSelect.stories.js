@@ -6,6 +6,8 @@
  */
 
 import React from 'react';
+
+import { WithLayer } from '../../../.storybook/templates/WithLayer';
 import {
   FluidMultiSelect,
   FluidMultiSelectSkeleton,
@@ -16,11 +18,17 @@ import {
   ToggletipButton,
   ToggletipContent,
 } from '../Toggletip';
-import { Information } from '@carbon/icons-react';
+import { AILabel, AILabelContent, AILabelActions } from '../AILabel';
+import { IconButton } from '../IconButton';
+import { Button } from '../Button';
+import { Information, View, FolderOpen, Folders } from '@carbon/icons-react';
 
 export default {
-  title: 'Experimental/unstable__FluidMultiSelect',
+  title: 'Experimental/Fluid Components/unstable__FluidMultiSelect',
   component: FluidMultiSelect,
+  subcomponents: {
+    FluidMultiSelectSkeleton,
+  },
 };
 
 const items = [
@@ -51,6 +59,96 @@ const items = [
   },
 ];
 
+export const Default = (args) => (
+  <div style={{ width: args.defaultWidth }}>
+    <FluidMultiSelect
+      onChange={() => {}}
+      id="default"
+      titleText="Label"
+      label="Choose an option"
+      items={items}
+      itemToString={(item) => (item ? item.text : '')}
+      {...args}
+    />
+  </div>
+);
+
+const sharedArgTypes = {
+  className: {
+    control: {
+      type: 'text',
+    },
+  },
+  isCondensed: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  isFilterable: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  disabled: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  invalid: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  invalidText: {
+    control: {
+      type: 'text',
+    },
+  },
+  label: {
+    control: {
+      type: 'text',
+    },
+  },
+  titleText: {
+    control: {
+      type: 'text',
+    },
+  },
+  warn: {
+    control: {
+      type: 'boolean',
+    },
+  },
+  warnText: {
+    control: {
+      type: 'text',
+    },
+  },
+};
+
+Default.args = {
+  defaultWidth: 400,
+  className: 'test-class',
+  isCondensed: false,
+  isFilterable: false,
+  disabled: false,
+  invalid: false,
+  invalidText:
+    'Error message that is really long can wrap to more lines but should not be excessively long.',
+  label: 'Choose an option',
+  titleText: 'Label',
+  warn: false,
+  warnText:
+    'Warning message that is really long can wrap to more lines but should not be excessively long.',
+};
+
+Default.argTypes = {
+  ...sharedArgTypes,
+  defaultWidth: {
+    control: { type: 'range', min: 300, max: 800, step: 50 },
+  },
+};
+
 const ToggleTip = (
   <>
     <ToggletipLabel>Label</ToggletipLabel>
@@ -65,9 +163,10 @@ const ToggleTip = (
   </>
 );
 
-export const Default = () => (
+export const Filterable = () => (
   <div style={{ width: '400px' }}>
     <FluidMultiSelect
+      isFilterable
       onChange={() => {}}
       initialSelectedItem={items[2]}
       id="default"
@@ -77,6 +176,23 @@ export const Default = () => (
       itemToString={(item) => (item ? item.text : '')}
     />
   </div>
+);
+
+export const _FilterableWithLayer = () => (
+  <WithLayer>
+    {(layer) => (
+      <div style={{ width: 300 }}>
+        <FluidMultiSelect
+          isFilterable
+          id={`carbon-multiselect-example-${layer}`}
+          titleText="Multiselect title"
+          items={items}
+          itemToString={(item) => (item ? item.text : '')}
+          selectionFeedback="top-after-reopen"
+        />
+      </div>
+    )}
+  </WithLayer>
 );
 
 export const Condensed = () => (
@@ -93,100 +209,59 @@ export const Condensed = () => (
   </div>
 );
 
-export const Playground = (args) => (
-  <div style={{ width: args.playgroundWidth }}>
+const aiLabel = (
+  <AILabel className="ai-label-container">
+    <AILabelContent>
+      <div>
+        <p className="secondary">AI Explained</p>
+        <h1>84%</h1>
+        <p className="secondary bold">Confidence score</p>
+        <p className="secondary">
+          Lorem ipsum dolor sit amet, di os consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut fsil labore et dolore magna aliqua.
+        </p>
+        <hr />
+        <p className="secondary">Model type</p>
+        <p className="bold">Foundation model</p>
+      </div>
+      <AILabelActions>
+        <IconButton kind="ghost" label="View">
+          <View />
+        </IconButton>
+        <IconButton kind="ghost" label="Open Folder">
+          <FolderOpen />
+        </IconButton>
+        <IconButton kind="ghost" label="Folders">
+          <Folders />
+        </IconButton>
+        <Button>View details</Button>
+      </AILabelActions>
+    </AILabelContent>
+  </AILabel>
+);
+
+export const withAILabel = (args) => (
+  <div style={{ width: '400px' }}>
     <FluidMultiSelect
       onChange={() => {}}
+      initialSelectedItem={items[2]}
       id="default"
       titleText="Label"
       label="Choose an option"
       items={items}
       itemToString={(item) => (item ? item.text : '')}
+      decorator={aiLabel}
       {...args}
-    />
-    <FluidMultiSelect
-      {...args}
-      onChange={() => {}}
-      id="default-3"
-      titleText={ToggleTip}
-      label="Choose an option"
-      items={items}
-      itemToString={(item) => (item ? item.text : '')}
     />
   </div>
 );
+
+withAILabel.argTypes = {
+  ...sharedArgTypes,
+};
 
 export const Skeleton = () => (
   <div style={{ width: 400 }}>
     <FluidMultiSelectSkeleton />
   </div>
 );
-
-Playground.argTypes = {
-  playgroundWidth: {
-    control: { type: 'range', min: 300, max: 800, step: 50 },
-    defaultValue: 400,
-  },
-  className: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: 'test-class',
-  },
-  isCondensed: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  isFilterable: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  disabled: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  invalid: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  invalidText: {
-    control: {
-      type: 'text',
-    },
-    defaultValue:
-      'Error message that is really long can wrap to more lines but should not be excessively long.',
-  },
-  label: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: 'Choose an option',
-  },
-  titleText: {
-    control: {
-      type: 'text',
-    },
-    defaultValue: 'Label',
-  },
-  warn: {
-    control: {
-      type: 'boolean',
-    },
-    defaultValue: false,
-  },
-  warnText: {
-    control: {
-      type: 'text',
-    },
-    defaultValue:
-      'Warning message that is really long can wrap to more lines but should not be excessively long.',
-  },
-};

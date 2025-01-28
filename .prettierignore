@@ -17,7 +17,6 @@ packages/components/demo/hot
 !packages/components/demo/index.js
 
 packages/components/docs/api/sass.md
-packages/components/examples/codesandbox
 packages/components/src/globals/fonts/LICENSE.md
 packages/components/tests/a11y-results
 packages/components/tests/coverage
@@ -32,9 +31,6 @@ packages/components/docs/js
 
 # Icons react
 packages/icons-react/next/**
-
-# Sketch
-**/*.sketchplugin/**
 
 # Changelogs
 **/CHANGELOG.md
@@ -62,6 +58,7 @@ packages/**/examples/**
 
 # Upgrade
 packages/upgrade/cli.js
+packages/upgrade/**/*.output.js
 
 # Accessibility Verification Testing
 **/.avt/**

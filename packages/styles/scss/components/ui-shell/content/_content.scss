@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -19,15 +19,16 @@
     will-change: margin-left;
   }
 
-  .#{$prefix}--header ~ .#{$prefix}--content {
-    margin-top: mini-units(6);
+  .#{$prefix}--header ~ .#{$prefix}--content,
+  div:has(.#{$prefix}--header) ~ .#{$prefix}--content {
+    margin-block-start: mini-units(6);
   }
 
   .#{$prefix}--side-nav ~ .#{$prefix}--content {
-    margin-left: mini-units(6);
+    margin-inline-start: mini-units(6);
   }
 
   .#{$prefix}--side-nav.#{$prefix}--side-nav--expanded ~ .#{$prefix}--content {
-    margin-left: mini-units(32);
+    margin-inline-start: mini-units(32);
   }
 }

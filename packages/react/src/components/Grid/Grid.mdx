@@ -1,23 +1,28 @@
-import { Story, Preview, Props } from '@storybook/addon-docs';
+import { Story, Canvas, ArgTypes, Meta } from '@storybook/blocks';
+import * as GridStories from './Grid.stories';
+import { stackblitzPrefillConfig } from '../../../previewer/codePreviewer';
+
+<Meta isTemplate />
 
 # Grid
 
 [Source code](https://github.com/carbon-design-system/carbon/tree/main/packages/react/src/components/Grid)
 &nbsp;|&nbsp;
-[Usage guidelines](https://www.carbondesignsystem.com/guidelines/2x-grid/overview)
+[Usage guidelines](https://carbondesignsystem.com/elements/2x-grid/overview/)
 
-<!-- prettier-ignore-start -->
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+{/* prettier-ignore-start */}
+
+{/* <!-- START doctoc generated TOC please keep comment here to allow auto update --> <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE --> */}
+
 ## Table of Contents
 
 - [Overview](#overview)
   - [Debugging](#debugging)
-- [Grid modes](#grid-modes)
+- [Gutter modes](#gutter-modes)
   - [Wide grid](#wide-grid)
   - [Condensed grid](#condensed-grid)
 - [Subgrid](#subgrid)
-- [Mixed grid modes](#mixed-grid-modes)
+- [Mixed gutter modes](#mixed-gutter-modes)
 - [Auto columns](#auto-columns)
 - [Offset columns](#offset-columns)
 - [Component API](#component-api)
@@ -27,11 +32,12 @@ import { Story, Preview, Props } from '@storybook/addon-docs';
   - [Can I nest grid components?](#can-i-nest-grid-components)
 - [Feedback](#feedback)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- prettier-ignore-end -->
+{/* <!-- END doctoc generated TOC please keep comment here to allow auto update --> */}
+
+{/* prettier-ignore-end */}
 
 Carbon's grid components help developers use the
-[2x Grid](https://www.carbondesignsystem.com/guidelines/2x-grid/overview). The
+[2x Grid](https://carbondesignsystem.com/elements/2x-grid/overview/). The
 project provides `Grid` and `Column` components which can be used to build a
 variety of layouts. You can import these components from `@carbon/react`:
 
@@ -39,9 +45,15 @@ variety of layouts. You can import these components from `@carbon/react`:
 import { Grid, Column } from '@carbon/react';
 ```
 
-<Preview>
-  <Story id="elements-grid--default" />
-</Preview>
+<Canvas
+  of={GridStories.Default}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Default),
+    },
+  ]}
+/>
 
 ## Overview
 
@@ -84,17 +96,23 @@ You can pair up multiple breakpoint props to specify how many columns the
 we will use the `sm`, `md`, and `lg` prop to specify how many columns the
 `Column` components should span at the small, medium, and large breakpoints.
 
-<Preview>
-  <Story id="elements-grid--default" />
-</Preview>
+<Canvas
+  of={GridStories.Default}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Default),
+    },
+  ]}
+/>
 
 ### Debugging
 
 It is incredibly helpful when debugging CSS Grid to use the browser developer
-tools' css grid mode to view the grid definition. Depending on the browser, these
-typically provide a toggle for overlaying a schematic showing the column and
-grid gap definition. With this overlay, it's much easier to visually understand
-if grid modes are configured and set properly on the grid.
+tools' css gutter mode to view the grid definition. Depending on the browser,
+these typically provide a toggle for overlaying a schematic showing the column
+and grid gap definition. With this overlay, it's much easier to visually
+understand if gutter modes are configured and set properly on the grid.
 
 Documentation on these features is available for
 [Chrome](https://developer.chrome.com/docs/devtools/css/grid/),
@@ -103,25 +121,50 @@ and
 [Safari](https://webkit.org/blog/11588/introducing-css-grid-inspector/#:~:text=If%20you're%20using%20Safari,%23css%2Dgrid%2Ddemo%20.),
 among others.
 
-## Grid modes
+## Gutter modes
 
 There are several
-[grid modes](https://www.carbondesignsystem.com/guidelines/2x-grid/implementation/#grid-modes)
+[gutter modes](https://www.carbondesignsystem.com/guidelines/2x-grid/implementation/#gutter-modes)
 that you can use depending on the layout effect you're looking to achieve. By
-default, `Grid` uses the wide grid mode with a 32px gutter. However, you can use
-the `condensed` prop to enable the condensed grid mode.
+default, `Grid` uses the wide gutter mode with a 32px gutter. However, you can
+use the `condensed` prop to enable the condensed gutter mode with a 1px gutter
+or the `narrow` prop to enable the narrow grid with a 16px gutter.
 
 ### Full width grid
 
-<Preview>
-  <Story id="elements-grid--full-width" />
-</Preview>
+<Canvas
+  of={GridStories.FullWidth}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.FullWidth),
+    },
+  ]}
+/>
 
 ### Condensed grid
 
-<Preview>
-  <Story id="elements-grid--condensed" />
-</Preview>
+<Canvas
+  of={GridStories.Condensed}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Condensed),
+    },
+  ]}
+/>
+
+### Narrow grid
+
+<Canvas
+  of={GridStories.Narrow}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Narrow),
+    },
+  ]}
+/>
 
 ## Subgrid
 
@@ -133,20 +176,48 @@ properly configured for the subgrid to inherit. Additionally, wrapping subgrids
 in a `Column` enables you to define responsive parameters for the column (`sm`,
 `md`, etc) that the subgrid will inherit and be bound to.
 
-<Preview>
-  <Story id="elements-grid--subgrid" />
-</Preview>
+<Canvas
+  of={GridStories.Subgrid}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Subgrid),
+    },
+  ]}
+/>
 
-## Mixed grid modes
+For more specialized grid implementations you may want to disable the automatic
+subgrid definition. To achieve this you can wrap your nested `Grid` in
+`GridSettings` and set `subgrid={false}`.
+
+```jsx
+<Grid>
+  <Column>
+    <GridSettings subgrid={false}>
+      <Grid>
+        <Column />
+      </Grid>
+    </GridSettings>
+  </Column>
+</Grid>
+```
+
+## Mixed gutter modes
 
 The same way that you can pass in `condensed` to a root `Grid`, you can also
-pass in `condensed` to a nested `Grid` (subgrid) to enable a certain grid mode
+pass in `condensed` to a nested `Grid` (subgrid) to enable a certain gutter mode
 for only that subgrid. This can be useful when you need to mix-and-match certain
-grid modes to achieve a particular layout.
+gutter modes to achieve a particular layout.
 
-<Preview>
-  <Story id="elements-grid--mixed-grid-modes" />
-</Preview>
+<Canvas
+  of={GridStories.MixedGutterModes}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.MixedGutterModes),
+    },
+  ]}
+/>
 
 ## Auto columns
 
@@ -162,9 +233,15 @@ grid's `grid-template-columns` property. This declares that there should be
 The values of these custom properties can be changed to modify the default
 behavior of columns.
 
-<Preview>
-  <Story id="elements-grid--responsives" />
-</Preview>
+<Canvas
+  of={GridStories.Responsive}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Responsive),
+    },
+  ]}
+/>
 
 ## Offset columns
 
@@ -183,13 +260,19 @@ breakpoint. At the medium breakpoint, it will be offset by two columns.
 <Column sm={2} md={{ span: 4, offset: 2 }} />
 ```
 
-<Preview>
-  <Story id="elements-grid--offset" />
-</Preview>
+<Canvas
+  of={GridStories.Offset}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(GridStories.Offset),
+    },
+  ]}
+/>
 
 ## Component API
 
-<Props />
+<ArgTypes />
 
 ### Using the `as` prop
 

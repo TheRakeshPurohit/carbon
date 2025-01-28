@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -203,6 +203,11 @@ export const border = TokenGroup.create({
     'border-strong-02',
     'border-strong-03',
 
+    // Border tile
+    'border-tile-01',
+    'border-tile-02',
+    'border-tile-03',
+
     // Border inverse
     'border-inverse',
 
@@ -255,8 +260,9 @@ export const link = TokenGroup.create({
     'link-secondary',
     {
       state: 'visited',
-      name: 'link-visited',
+      name: 'link-inverse-visited',
     },
+    'link-visited',
     'link-inverse',
     'link-inverse-active',
     'link-inverse-hover',
@@ -281,6 +287,7 @@ export const icon = TokenGroup.create({
       state: 'disabled',
       name: 'icon-disabled',
     },
+    'icon-interactive',
   ],
 });
 
@@ -331,6 +338,57 @@ export const contextual = TokenGroup.create({
     'border-subtle',
     'border-subtle-selected',
     'border-strong',
+    'border-tile',
+  ],
+});
+
+export const ai = TokenGroup.create({
+  name: 'AI',
+  properties: ['background'],
+  tokens: [
+    // Phase 2
+    'ai-popover-background',
+    'ai-popover-shadow-outer-01',
+    'ai-popover-shadow-outer-02',
+    // Linear gradient refactor
+    'ai-inner-shadow',
+    'ai-aura-start-sm',
+    'ai-aura-start',
+    'ai-aura-end',
+    'ai-aura-hover-background',
+    'ai-aura-hover-start',
+    'ai-aura-hover-end',
+    'ai-border-strong',
+    'ai-border-start',
+    'ai-border-end',
+    'ai-drop-shadow',
+    'ai-skeleton-background',
+    'ai-skeleton-element-background',
+    'ai-overlay',
+    // Caret tokens
+    'ai-popover-caret-center',
+    'ai-popover-caret-bottom',
+    'ai-popover-caret-bottom-background',
+    'ai-popover-caret-bottom-background-actions',
+    // Chat tokens
+    'chat-prompt-background',
+    'chat-prompt-border-start',
+    'chat-prompt-border-end',
+    'chat-bubble-user',
+    'chat-bubble-agent',
+    'chat-bubble-border',
+    'chat-avatar-bot',
+    'chat-avatar-agent',
+    'chat-avatar-user',
+    'chat-shell-background',
+    'chat-header-background',
+    // Chat button tokens
+    'chat-button',
+    'chat-button-hover',
+    'chat-button-text-hover',
+    'chat-button-active',
+    'chat-button-selected',
+    'chat-button-text-selected',
   ],
 });
 
@@ -352,6 +410,7 @@ export const group = TokenGroup.create({
     link,
     icon,
     support,
+    ai,
 
     // Misc
     {

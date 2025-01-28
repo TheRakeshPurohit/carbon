@@ -1,25 +1,31 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
-@use '../../config' as *;
+@use 'tokens' as *;
 @use 'vars' as *;
 @use 'mixins' as *;
+@use '../tooltip';
+@use '../../config' as *;
 @use '../../spacing' as *;
 @use '../../theme' as *;
 @use '../../type' as *;
-@use '../../utilities/convert' as *;
+@use '../../layer' as *;
+@use '../../utilities/convert';
 @use '../../utilities/focus-outline';
 @use '../../utilities/high-contrast-mode' as *;
 @use '../../utilities/skeleton' as *;
 @use '../../utilities/visually-hidden' as *;
-@use 'tokens' as *;
+@use '../../utilities/layout';
 
 @mixin button {
   .#{$prefix}--btn {
+    @include layout.use('size', $min: 'sm', $default: 'lg', $max: '2xl');
+    @include layout.use('density', $default: 'normal');
+
     @include button-base;
   }
 
@@ -102,16 +108,19 @@
       transparent,
       transparent,
       $link-primary,
-      $layer-hover,
+      $background-hover,
       currentColor,
-      $layer-active
+      $background-active
     );
 
-    padding: $button-padding-ghost;
+    padding-inline-end: calc(
+      layout.density('padding-inline') - convert.to-rem(1px)
+    );
 
     .#{$prefix}--btn__icon {
       position: static;
-      margin-left: $spacing-03;
+      align-self: center;
+      margin-inline-start: $spacing-03;
     }
 
     &:hover,
@@ -135,24 +144,27 @@
       outline: none;
     }
 
-    &.#{$prefix}--btn--sm {
-      padding: $button-padding-ghost-sm;
-    }
-
-    // V11: remove field
-    &.#{$prefix}--btn--field,
-    &.#{$prefix}--btn--md {
-      padding: $button-padding-ghost-field;
-    }
-
     &:not([disabled]) svg {
       fill: $icon-primary;
     }
   }
 
   .#{$prefix}--btn--icon-only {
-    padding-right: rem(15px);
-    padding-left: rem(15px);
+    justify-content: center;
+    padding: 0;
+    block-size: layout.size('height');
+    inline-size: layout.size('height');
+    // -1px to compensate for border width
+    padding-block-start: min(
+      calc(
+        (layout.size('height') - convert.to-rem(16px)) / 2 - convert.to-rem(1px)
+      ),
+      var(--temp-padding-block-max)
+    );
+
+    > :first-child {
+      min-inline-size: convert.to-rem(16px);
+    }
 
     .#{$prefix}--btn__icon {
       position: static;
@@ -162,6 +174,18 @@
     &.#{$prefix}--btn--danger--ghost .#{$prefix}--btn__icon {
       margin: 0;
     }
+
+    &.#{$prefix}--btn--danger--ghost {
+      padding-inline-end: calc(
+        layout.density('padding-inline') - convert.to-rem(16px)
+      );
+    }
+  }
+
+  // Adjust icon positioning in small, medium variants only
+  .#{$prefix}--btn--sm:not(.#{$prefix}--btn--icon-only) .#{$prefix}--btn__icon,
+  .#{$prefix}--btn--md:not(.#{$prefix}--btn--icon-only) .#{$prefix}--btn__icon {
+    margin-block-start: 0;
   }
 
   .#{$prefix}--btn--icon-only.#{$prefix}--btn--selected {
@@ -193,16 +217,14 @@
     cursor: not-allowed;
   }
 
-  // V11: remove field
-  .#{$prefix}--btn--field.#{$prefix}--btn--icon-only,
-  .#{$prefix}--btn--md.#{$prefix}--btn--icon-only {
-    padding-right: rem(11px);
-    padding-left: rem(11px);
+  // Workaround to ensure onMouseEnter events fire when moving
+  // from a disabled button to a non-disabled button (#13815)
+  .#{$prefix}--icon-tooltip--disabled .#{$prefix}--tooltip-trigger__wrapper {
+    cursor: not-allowed;
   }
 
-  .#{$prefix}--btn--sm.#{$prefix}--btn--icon-only {
-    padding-right: rem(7px);
-    padding-left: rem(7px);
+  .#{$prefix}--icon-tooltip--disabled .#{$prefix}--btn--icon-only[disabled] {
+    pointer-events: none;
   }
 
   .#{$prefix}--btn--danger {
@@ -267,11 +289,13 @@
         $button-danger-active
       );
 
-      padding: $button-padding-ghost;
+      padding-inline-end: calc(
+        layout.density('padding-inline') - convert.to-rem(1px)
+      );
 
       .#{$prefix}--btn__icon {
         position: static;
-        margin-left: $spacing-03;
+        margin-inline-start: $spacing-03;
       }
 
       &:hover,
@@ -290,48 +314,21 @@
         color: $text-disabled;
         outline: none;
       }
-
-      &.#{$prefix}--btn--sm {
-        padding: $button-padding-ghost-sm;
-      }
-
-      // V11: Remove field
-      &.#{$prefix}--btn--field,
-      &.#{$prefix}--btn--md {
-        padding: $button-padding-ghost-field;
-      }
     }
-  }
-
-  .#{$prefix}--btn--sm {
-    min-height: rem(32px);
-    padding: $button-padding-sm;
-  }
-
-  .#{$prefix}--btn--2xl:not(.#{$prefix}--btn--icon-only) {
-    @include button-padding-large;
-
-    min-height: rem(80px);
-  }
-
-  .#{$prefix}--btn--xl:not(.#{$prefix}--btn--icon-only) {
-    @include button-padding-large;
-
-    min-height: rem(64px);
-  }
-
-  // V11: Remove field
-  .#{$prefix}--btn--field,
-  .#{$prefix}--btn--md {
-    min-height: rem(40px);
-    padding: $button-padding-field;
   }
 
   //expressive styles
   .#{$prefix}--btn--expressive {
     @include type-style('body-compact-02');
 
-    min-height: 3rem;
+    padding-block: min(
+      calc(
+        (layout.size('height') - var(--temp-expressive-1lh)) / 2 - convert.to-rem(
+            1px
+          )
+      ),
+      var(--temp-padding-block-max)
+    );
   }
 
   .#{$prefix}--btn--icon-only.#{$prefix}--btn--expressive {
@@ -340,19 +337,19 @@
   }
 
   .#{$prefix}--btn.#{$prefix}--btn--expressive .#{$prefix}--btn__icon {
-    width: rem(20px);
-    height: rem(20px);
+    block-size: convert.to-rem(20px);
+    inline-size: convert.to-rem(20px);
   }
 
   .#{$prefix}--btn-set .#{$prefix}--btn.#{$prefix}--btn--expressive {
-    max-width: rem(320px);
+    max-inline-size: convert.to-rem(320px);
   }
 
   // Skeleton State
   .#{$prefix}--btn.#{$prefix}--skeleton {
     @include skeleton;
 
-    width: rem(150px);
+    inline-size: convert.to-rem(150px);
   }
 
   // button set styles
@@ -365,12 +362,12 @@
   }
 
   .#{$prefix}--btn-set .#{$prefix}--btn {
-    width: 100%;
+    inline-size: 100%;
     // 196px from design kit
-    max-width: rem(196px);
+    max-inline-size: convert.to-rem(196px);
 
     &:not(:focus) {
-      box-shadow: rem(-1px) 0 0 0 $button-separator;
+      box-shadow: convert.to-rem(-1px) 0 0 0 $button-separator;
     }
 
     &:first-of-type:not(:focus) {
@@ -383,7 +380,7 @@
   }
 
   .#{$prefix}--btn-set--stacked .#{$prefix}--btn:not(:focus) {
-    box-shadow: 0 rem(-1px) 0 0 $button-separator;
+    box-shadow: 0 convert.to-rem(-1px) 0 0 $button-separator;
   }
 
   .#{$prefix}--btn-set--stacked .#{$prefix}--btn:first-of-type:not(:focus) {
@@ -391,7 +388,7 @@
   }
 
   .#{$prefix}--btn-set .#{$prefix}--btn.#{$prefix}--btn--disabled {
-    box-shadow: rem(-1px) 0 0 0 $icon-on-color-disabled;
+    box-shadow: convert.to-rem(-1px) 0 0 0 $icon-on-color-disabled;
 
     &:first-of-type {
       box-shadow: none;
@@ -399,11 +396,17 @@
   }
 
   .#{$prefix}--btn-set--stacked .#{$prefix}--btn.#{$prefix}--btn--disabled {
-    box-shadow: 0 rem(-1px) 0 0 $layer-selected-disabled;
+    box-shadow: 0 convert.to-rem(-1px) 0 0 $layer-selected-disabled;
 
     &:first-of-type {
       box-shadow: none;
     }
+  }
+
+  .#{$prefix}--btn-set .#{$prefix}--btn.#{$prefix}--btn--loading {
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
   }
 
   // Windows HCM fix
@@ -412,11 +415,16 @@
   }
 
   // Windows HCM fix
-  // stylelint-disable-next-line no-duplicate-selectors
+
   .#{$prefix}--btn--ghost.#{$prefix}--btn--icon-only
     .#{$prefix}--btn__icon
     path:not([data-icon-path]):not([fill='none']),
   .#{$prefix}--btn--ghost.#{$prefix}--btn--icon-only .#{$prefix}--btn__icon {
     @include high-contrast-mode('icon-fill');
+  }
+
+  // RTL overrides
+  [dir='rtl'] .#{$prefix}--btn-set .#{$prefix}--btn:not(:focus) {
+    box-shadow: convert.to-rem(1px) 0 0 0 $button-separator;
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,15 +14,21 @@ const typescript = require('@rollup/plugin-typescript');
 const path = require('path');
 const { rollup } = require('rollup');
 const stripBanner = require('rollup-plugin-strip-banner');
+const {
+  loadBaseTsCompilerOpts,
+  loadTsCompilerOpts,
+} = require('typescript-config-carbon');
 const packageJson = require('../package.json');
 
 async function build() {
   const reactEntrypoint = {
-    filepath: path.resolve(__dirname, '..', 'src', 'index.js'),
+    filepath: path.resolve(__dirname, '..', 'src', 'index.ts'),
+    rootDir: 'src',
     outputDirectory: path.resolve(__dirname, '..'),
   };
   const iconsEntrypoint = {
-    filepath: path.resolve(__dirname, '..', 'icons', 'src', 'index.js'),
+    filepath: path.resolve(__dirname, '..', 'icons', 'src', 'index.ts'),
+    rootDir: path.join('icons', 'src'),
     outputDirectory: path.resolve(__dirname, '..', 'icons'),
   };
   const formats = [
@@ -45,8 +51,8 @@ async function build() {
 
     const reactInputConfig = getRollupConfig(
       reactEntrypoint.filepath,
-      outputDirectory,
-      true
+      reactEntrypoint.rootDir,
+      outputDirectory
     );
     const reactBundle = await rollup(reactInputConfig);
 
@@ -58,25 +64,29 @@ async function build() {
       banner,
       exports: 'named',
     });
-  }
 
-  const iconsInputConfig = getRollupConfig(iconsEntrypoint.filepath);
-  const iconsBundle = await rollup(iconsInputConfig);
+    const iconsInputConfig = getRollupConfig(
+      iconsEntrypoint.filepath,
+      iconsEntrypoint.rootDir,
+      outputDirectory
+    );
+    const iconsBundle = await rollup(iconsInputConfig);
 
-  // Build @carbon/react icons
-  for (const format of formats) {
-    await iconsBundle.write({
-      file:
-        format.type === 'commonjs' ? 'icons/index.js' : 'icons/index.esm.js',
-      format: format.type,
-      banner,
-      exports: 'named',
-    });
+    // Build @carbon/react icons
+    for (const format of formats) {
+      await iconsBundle.write({
+        file:
+          format.type === 'commonjs' ? 'icons/index.js' : 'icons/index.esm.js',
+        format: format.type,
+        banner,
+        exports: 'named',
+      });
+    }
   }
 }
 
 const banner = `/**
- * Copyright IBM Corp. 2016, 2022
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -98,32 +108,60 @@ const babelConfig = {
       },
     ],
     '@babel/preset-react',
+    '@babel/preset-typescript',
   ],
   plugins: [
     'dev-expression',
-    '@babel/plugin-proposal-class-properties',
-    '@babel/plugin-proposal-export-namespace-from',
     '@babel/plugin-proposal-export-default-from',
+    '@babel/plugin-transform-class-properties',
+    '@babel/plugin-transform-export-namespace-from',
     '@babel/plugin-transform-react-constant-elements',
   ],
   babelHelpers: 'bundled',
+  extensions: ['.ts', '.tsx', '.js', '.jsx'],
 };
 
-function getRollupConfig(input, outDir, useTS) {
+function getTsCompilerOptions() {
+  const baseOpts = loadBaseTsCompilerOpts();
+  const projectTsConfigPath = path.resolve(__dirname, '../tsconfig.json');
+  const overrideOpts = loadTsCompilerOpts(projectTsConfigPath);
+  return { ...baseOpts, ...overrideOpts };
+}
+
+function getRollupConfig(input, rootDir, outDir) {
   return {
     input,
+    // Mark dependencies listed in `package.json` as external so that they are
+    // not included in the output bundle.
     external: [
       ...Object.keys(packageJson.peerDependencies),
       ...Object.keys(packageJson.dependencies),
       ...Object.keys(packageJson.devDependencies),
-    ],
+    ].map((name) => {
+      // Transform the name of each dependency into a regex so that imports from
+      // nested paths are correctly marked as external.
+      //
+      // Example:
+      // import 'module-name';
+      // import 'module-name/path/to/nested/module';
+      return new RegExp(`^${name}(/.*)?`);
+    }),
     plugins: [
       nodeResolve(),
       commonjs({
         include: /node_modules/,
       }),
-      // Modify plugins for builds that require typescript
-      ...(useTS ? getTSPlugins(outDir) : getPlugins()),
+      typescript({
+        noEmitOnError: true,
+        noForceEmit: true,
+        outputToFilesystem: false,
+        compilerOptions: {
+          ...getTsCompilerOptions(),
+          rootDir,
+          outDir,
+        },
+      }),
+      babel(babelConfig),
       stripBanner(),
       {
         transform(_code, id) {
@@ -138,39 +176,6 @@ function getRollupConfig(input, outDir, useTS) {
       },
     ],
   };
-}
-
-/**
- * Rollup plugins to support typescript compilation/transpilation
- * @param {*} outDir
- * @returns
- */
-function getTSPlugins(outDir) {
-  return [
-    typescript({
-      noEmitOnError: true,
-      noForceEmit: true,
-      outputToFilesystem: false,
-      compilerOptions: {
-        rootDir: 'src',
-        emitDeclarationOnly: true,
-        declarationDir: outDir,
-      },
-    }),
-    babel({
-      ...babelConfig,
-      presets: [...babelConfig.presets, '@babel/preset-typescript'],
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    }),
-  ];
-}
-
-/**
- * Rollup plugins to support pure JS compilation
- * @returns
- */
-function getPlugins() {
-  return [babel(babelConfig)];
 }
 
 build().catch((error) => {

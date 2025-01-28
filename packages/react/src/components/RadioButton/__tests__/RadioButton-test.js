@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import RadioButton from '../RadioButton';
+import { AILabel } from '../../AILabel';
+
+const prefix = 'cds';
 
 describe('RadioButton', () => {
   it('should render an input with type="radio"', () => {
@@ -72,7 +75,7 @@ describe('RadioButton', () => {
     expect(screen.getByRole('radio')).toHaveAttribute('id', 'test-id');
   });
 
-  it('should invoke onChange with expected arguments', () => {
+  it('should invoke onChange with expected arguments', async () => {
     const onChange = jest.fn();
 
     render(
@@ -84,7 +87,7 @@ describe('RadioButton', () => {
       />
     );
 
-    userEvent.click(screen.getByRole('radio'));
+    await userEvent.click(screen.getByRole('radio'));
 
     expect(onChange).toHaveBeenCalled();
     expect(onChange).toHaveBeenCalledWith(
@@ -131,5 +134,64 @@ describe('RadioButton', () => {
       />
     );
     expect(ref).toHaveBeenCalledWith(screen.getByRole('radio'));
+  });
+
+  it('should respect decorator prop', () => {
+    const { container } = render(
+      <RadioButton
+        name="test-name"
+        value="test-value"
+        labelText="test-label"
+        decorator={<AILabel />}
+      />
+    );
+
+    expect(container.firstChild).toHaveClass(
+      `${prefix}--radio-button-wrapper--decorator`
+    );
+  });
+
+  it('should update AILabel size', () => {
+    const { container } = render(
+      <RadioButton
+        name="test-name"
+        value="test-value"
+        labelText="test-label"
+        decorator={<AILabel kind="inline" />}
+      />
+    );
+
+    expect(container.querySelector(`.${prefix}--ai-label__button`)).toHaveClass(
+      `${prefix}--ai-label__button--md`
+    );
+  });
+
+  it('should respect the deprecated slug prop', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { container } = render(
+      <RadioButton
+        name="test-name"
+        value="test-value"
+        labelText="test-label"
+        slug={<AILabel />}
+      />
+    );
+
+    expect(container.firstChild).toHaveClass(
+      `${prefix}--radio-button-wrapper--slug`
+    );
+    spy.mockRestore();
+  });
+
+  it('should set the "required" attribute on the <input> by default', () => {
+    render(
+      <RadioButton
+        name="test-name"
+        value="test-value"
+        labelText="test-label"
+        required
+      />
+    );
+    expect(screen.getByRole('radio')).toHaveAttribute('required');
   });
 });

@@ -7,6 +7,7 @@
 
 import React from 'react';
 import PaginationNav from '../PaginationNav';
+import './styles.scss';
 
 export default {
   title: 'Components/PaginationNav',
@@ -15,21 +16,27 @@ export default {
   parameters: {},
 };
 
-export const Default = () => (
-  <div style={{ width: '800px' }}>
-    <PaginationNav itemsShown={10} totalItems={25} />
-  </div>
-);
-
-export const Playground = (args) => (
+export const Default = (args) => (
   <div style={{ width: '800px' }}>
     <PaginationNav {...args} />
   </div>
 );
 
-Playground.argTypes = {
+Default.args = {
+  size: 'lg',
+  loop: false,
+  itemsShown: 10,
+  page: 0,
+  totalItems: 25,
+  disableOverflow: false,
+};
+
+Default.argTypes = {
+  size: {
+    options: ['sm', 'md', 'lg'],
+    control: { type: 'select' },
+  },
   loop: {
-    defaultValue: false,
     control: {
       type: 'boolean',
     },
@@ -38,18 +45,20 @@ Playground.argTypes = {
     control: {
       type: 'number',
     },
-    defaultValue: 10,
   },
   page: {
     control: {
       type: 'number',
     },
-    defaultValue: 0,
   },
   totalItems: {
     control: {
       type: 'number',
     },
-    defaultValue: 25,
+  },
+  disableOverflow: {
+    control: {
+      type: 'boolean',
+    },
   },
 };

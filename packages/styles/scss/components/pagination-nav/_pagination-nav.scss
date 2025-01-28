@@ -1,21 +1,22 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
+@use 'mixins' as *;
+@use '../button';
 @use '../../config' as *;
 @use '../../motion' as *;
 @use '../../spacing' as *;
 @use '../../type' as *;
 @use '../../theme' as *;
 @use '../../utilities/button-reset';
-@use '../../utilities/convert' as *;
 @use '../../utilities/focus-outline' as *;
 @use '../../utilities/high-contrast-mode' as *;
+@use '../../utilities/layout';
 @use '../../utilities/visually-hidden' as *;
-@use 'mixins' as *;
 
 /// Pagination nav base styles
 /// @access public
@@ -26,9 +27,9 @@
 /// @param {Color} $background-color-active [initial]
 /// @param {Number} $font-weight [400]
 /// @param {Number} $item-padding [0]
-/// @param {Number} $button-min-width [$spacing-09]
-/// @param {Value} $button-padding [1.0625rem $spacing-02]
-/// @param {Number} $button-direction-size [$spacing-09]
+/// @param {Number} $button-min-width [$spacing-09] TODO: remove in v12
+/// @param {Value} $button-padding [1.0625rem $spacing-02] TODO: remove in v12
+/// @param {Number} $button-direction-size [$spacing-09] TODO: remove in v12
 /// @param {Number} $select-icon-top-position [$spacing-05]
 /// @param {Number} $select-icon-left-position [$spacing-05]
 @mixin pagination-nav(
@@ -47,6 +48,8 @@
   .#{$prefix}--pagination-nav {
     @include reset;
     @include type-style('body-compact-01');
+    @include layout.use('size', $default: 'lg', $min: 'sm', $max: 'lg');
+    @include layout.use('density', $default: 'normal');
 
     line-height: 0;
   }
@@ -61,11 +64,11 @@
     padding: $item-padding;
 
     &:first-child {
-      padding-left: 0;
+      padding-inline-start: 0;
     }
 
     &:last-child {
-      padding-right: 0;
+      padding-inline-end: 0;
     }
   }
 
@@ -75,16 +78,18 @@
 
     position: relative;
     display: block;
-    min-width: $button-min-width;
-    padding: $button-padding;
+    // subtract 0.875rem to account for font-size 14px
+    padding: calc((layout.size('height') - 0.875rem) / 2) $spacing-02;
     border-radius: 0;
     color: $text-primary;
     font-weight: $font-weight;
     line-height: 1;
+    min-inline-size: layout.size('height');
     outline: 0;
     text-align: center;
     text-decoration: none;
-    transition: background-color $duration-fast-02 motion(standard, productive),
+    transition:
+      background-color $duration-fast-02 motion(standard, productive),
       color $duration-fast-02 motion(standard, productive);
     user-select: none;
 
@@ -119,12 +124,13 @@
     }
   }
 
+  // TODO: remove in v12
   .#{$prefix}--pagination-nav__page--direction {
     display: flex;
-    width: $button-direction-size;
-    height: $button-direction-size;
     align-items: center;
     justify-content: center;
+    block-size: $button-direction-size;
+    inline-size: $button-direction-size;
     line-height: 0;
   }
 
@@ -133,20 +139,20 @@
   }
 
   .#{$prefix}--pagination-nav__page--select {
-    max-height: $button-min-width;
     appearance: none;
+    max-block-size: layout.size('height');
     text-indent: calc(50% - 4.5px);
     // Override some Firefox user-agent styles
-    @-moz-document url-prefix() {
+    @document url-prefix() {
       text-indent: 0;
     }
   }
 
   .#{$prefix}--pagination-nav__select-icon-wrapper {
     position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    block-size: 100%;
+    inline-size: 100%;
+    inset-block-start: 0;
     pointer-events: none;
 
     @include pseudo-underline();
@@ -160,12 +166,17 @@
 
   .#{$prefix}--pagination-nav__select-icon {
     position: absolute;
-    top: calc(50% - #{$select-icon-top-position * 0.5});
-    left: calc(50% - #{$select-icon-top-position * 0.5});
+    inset-block-start: calc(50% - #{$select-icon-top-position * 0.25});
+    inset-inline-start: calc(50% - #{$select-icon-top-position * 0.5});
     pointer-events: none;
   }
 
   .#{$prefix}--pagination-nav__accessibility-label {
     @include visually-hidden;
+  }
+
+  // RTL overrides
+  [dir='rtl'] .#{$prefix}--pagination-nav__list-item svg {
+    transform: rotate(0.5turn);
   }
 }

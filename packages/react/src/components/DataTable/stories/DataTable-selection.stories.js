@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -42,8 +42,29 @@ export default {
   },
 };
 
-export const Default = () => (
-  <DataTable rows={rows} headers={headers}>
+const sharedArgTypes = {
+  filterRows: {
+    control: false,
+  },
+  headers: {
+    control: false,
+  },
+  overflowMenuOnHover: {
+    control: false,
+  },
+  rows: {
+    control: false,
+  },
+  translateWithId: {
+    control: false,
+  },
+  sortRow: {
+    control: false,
+  },
+};
+
+export const Default = (args) => (
+  <DataTable rows={rows} headers={headers} {...args}>
     {({
       rows,
       headers,
@@ -57,10 +78,14 @@ export const Default = () => (
         title="DataTable"
         description="With selection"
         {...getTableContainerProps()}>
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
-              <TableSelectAll {...getSelectionProps()} />
+              {args.radio ? (
+                <th scope="col" />
+              ) : (
+                <TableSelectAll {...getSelectionProps()} />
+              )}
               {headers.map((header, i) => (
                 <TableHeader key={i} {...getHeaderProps({ header })}>
                   {header.header}
@@ -78,10 +103,7 @@ export const Default = () => (
                 }}>
                 <TableSelectRow
                   {...getSelectionProps({ row })}
-                  onSelect={(evt) => {
-                    action('TableSelectRow onSelect')(evt);
-                    getSelectionProps({ row }).onSelect(evt);
-                  }}
+                  onChange={action('TableSelectRow - onChange')}
                 />
                 {row.cells.map((cell) => (
                   <TableCell key={cell.id}>{cell.value}</TableCell>
@@ -95,8 +117,10 @@ export const Default = () => (
   </DataTable>
 );
 
-export const WithRadioSelection = () => (
-  <DataTable rows={rows} headers={headers} radio>
+Default.argTypes = { ...sharedArgTypes };
+
+export const WithRadioSelection = (args) => (
+  <DataTable rows={rows} headers={headers} radio {...args}>
     {({
       rows,
       headers,
@@ -110,7 +134,7 @@ export const WithRadioSelection = () => (
         title="DataTable"
         description="With radio selection"
         {...getTableContainerProps()}>
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
               <th scope="col" />
@@ -137,8 +161,10 @@ export const WithRadioSelection = () => (
   </DataTable>
 );
 
-export const WithSelectionAndSorting = () => (
-  <DataTable rows={rows} headers={headers} isSortable>
+WithRadioSelection.argTypes = { ...sharedArgTypes };
+
+export const WithSelectionAndSorting = (args) => (
+  <DataTable rows={rows} headers={headers} isSortable {...args}>
     {({
       rows,
       headers,
@@ -152,7 +178,7 @@ export const WithSelectionAndSorting = () => (
         title="DataTable"
         description="With selection"
         {...getTableContainerProps()}>
-        <Table {...getTableProps()}>
+        <Table {...getTableProps()} aria-label="sample table">
           <TableHead>
             <TableRow>
               <TableSelectAll {...getSelectionProps()} />
@@ -178,88 +204,5 @@ export const WithSelectionAndSorting = () => (
     )}
   </DataTable>
 );
-export const Playground = (args) => (
-  <DataTable rows={rows} headers={headers} {...args}>
-    {({
-      rows,
-      headers,
-      getHeaderProps,
-      getRowProps,
-      getSelectionProps,
-      getTableProps,
-      getTableContainerProps,
-    }) => (
-      <TableContainer
-        title="DataTable"
-        description="With selection"
-        {...getTableContainerProps()}>
-        <Table {...getTableProps()}>
-          <TableHead>
-            <TableRow>
-              <TableSelectAll {...getSelectionProps()} />
-              {headers.map((header, i) => (
-                <TableHeader key={i} {...getHeaderProps({ header })}>
-                  {header.header}
-                </TableHeader>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row, i) => (
-              <TableRow
-                key={i}
-                {...getRowProps({ row })}
-                onClick={(evt) => {
-                  action('TableRow onClick')(evt);
-                }}>
-                <TableSelectRow
-                  {...getSelectionProps({ row })}
-                  onSelect={(evt) => {
-                    action('TableSelectRow onSelect')(evt);
-                    getSelectionProps({ row }).onSelect(evt);
-                  }}
-                />
-                {row.cells.map((cell) => (
-                  <TableCell key={cell.id}>{cell.value}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    )}
-  </DataTable>
-);
 
-Playground.argTypes = {
-  filterRows: {
-    table: {
-      disable: true,
-    },
-  },
-  headers: {
-    table: {
-      disable: true,
-    },
-  },
-  overflowMenuOnHover: {
-    table: {
-      disable: true,
-    },
-  },
-  rows: {
-    table: {
-      disable: true,
-    },
-  },
-  translateWithId: {
-    table: {
-      disable: true,
-    },
-  },
-  sortRow: {
-    table: {
-      disable: true,
-    },
-  },
-};
+WithSelectionAndSorting.argTypes = { ...sharedArgTypes };

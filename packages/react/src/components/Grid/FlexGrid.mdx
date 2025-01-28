@@ -1,18 +1,23 @@
-import { Story, Preview, Props } from '@storybook/addon-docs';
+import { Story, Canvas, ArgTypes, Meta } from '@storybook/blocks';
+import * as FlexGridStories from './FlexGrid.stories';
+import { stackblitzPrefillConfig } from '../../../previewer/codePreviewer';
+
+<Meta isTemplate />
 
 # Grid
 
 [Source code](https://github.com/carbon-design-system/carbon/tree/main/packages/react/src/components/Grid)
 &nbsp;|&nbsp;
-[Usage guidelines](https://www.carbondesignsystem.com/guidelines/2x-grid/overview)
+[Usage guidelines](https://carbondesignsystem.com/elements/2x-grid/overview/)
 
-<!-- prettier-ignore-start -->
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+{/* prettier-ignore-start */}
+
+{/* <!-- START doctoc generated TOC please keep comment here to allow auto update --> <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE --> */}
+
 ## Table of Contents
 
 - [Overview](#overview)
-- [Grid modes](#grid-modes)
+- [Gutter modes](#gutter-modes)
   - [Wide grid](#wide-grid)
   - [Narrow grid](#narrow-grid)
   - [Condensed grid](#condensed-grid)
@@ -26,11 +31,12 @@ import { Story, Preview, Props } from '@storybook/addon-docs';
   - [Can I nest grid components?](#can-i-nest-grid-components)
 - [Feedback](#feedback)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- prettier-ignore-end -->
+{/* <!-- END doctoc generated TOC please keep comment here to allow auto update --> */}
+
+{/* prettier-ignore-end */}
 
 Carbon's grid components help developers use the
-[2x Grid](https://www.carbondesignsystem.com/guidelines/2x-grid/overview). The
+[2x Grid](https://carbondesignsystem.com/elements/2x-grid/overview/). The
 project provides `FlexGrid`, `Row`, and `Column` components which can be used to
 build a variety of layouts. You can import these components from
 `@carbon/react`:
@@ -39,9 +45,23 @@ build a variety of layouts. You can import these components from
 import { FlexGrid, Row, Column } from '@carbon/react';
 ```
 
-<Preview>
-  <Story id="components-flexgrid--responsive-grid" />
-</Preview>
+```scss
+/* FlexGrid styles are not emitted by default, the feature flag must be turned on */
+
+@use '@carbon/react' with (
+  $use-flexbox-grid: true
+);
+```
+
+<Canvas
+  of={FlexGridStories.ResponsiveGrid}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.ResponsiveGrid),
+    },
+  ]}
+/>
 
 ## Overview
 
@@ -84,47 +104,77 @@ You can pair up multiple breakpoint props to specify how many columns the
 we will use the `sm`, `md`, and `lg` prop to specify how many columns the
 `Column` components should span at the small, medium, and large breakpoints.
 
-<Preview>
-  <Story id="components-flexgrid--responsive-grid" />
-</Preview>
+<Canvas
+  of={FlexGridStories.ResponsiveGrid}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.ResponsiveGrid),
+    },
+  ]}
+/>
 
-## Grid modes
+## Gutter modes
 
 There are several
-[grid modes](https://www.carbondesignsystem.com/guidelines/2x-grid/implementation/#grid-modes)
+[gutter modes](https://www.carbondesignsystem.com/guidelines/2x-grid/implementation/#gutter-modes)
 that you can use depending on the layout effect you're looking to achieve. By
-default, `FlexGrid` uses the wide grid mode with a 32px gutter. However, you can
-use the `narrow` or `condensed` props to enable the narrow and condensed grid
-modes, respectively.
+default, `FlexGrid` uses the wide gutter mode with a 32px gutter. However, you
+can use the `narrow` or `condensed` props to enable the narrow and condensed
+grid modes, respectively.
 
 The same way that you can pass in `narrow` or `condensed` to the `FlexGrid`
 component, you can also pass in `narrow` or `condensed` to a `Row` component to
-enable a certain grid mode but only for a row. This can be useful when you need
-to mix-and-match certain grid modes to achieve a particular layout.
+enable a certain gutter mode but only for a row. This can be useful when you
+need to mix-and-match certain gutter modes to achieve a particular layout.
 
 ### Wide grid
 
-<Preview>
-  <Story id="components-flexgrid--full-width" />
-</Preview>
+<Canvas
+  of={FlexGridStories.FullWidth}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.FullWidth),
+    },
+  ]}
+/>
 
 ### Narrow grid
 
-<Preview>
-  <Story id="components-flexgrid--narrow" />
-</Preview>
+<Canvas
+  of={FlexGridStories.Narrow}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.Narrow),
+    },
+  ]}
+/>
 
 ### Condensed grid
 
-<Preview>
-  <Story id="components-flexgrid--condensed" />
-</Preview>
+<Canvas
+  of={FlexGridStories.Condensed}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.Condensed),
+    },
+  ]}
+/>
 
 ### Mix-and-match
 
-<Preview>
-  <Story id="components-flexgrid--mixed-grid-modes" />
-</Preview>
+<Canvas
+  of={FlexGridStories.MixedGutterModes}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.MixedGutterModes),
+    },
+  ]}
+/>
 
 ## Auto columns
 
@@ -142,9 +192,15 @@ For example, if you have on `Column` component it would span 100%, two `Column`
 components would span 50% each, four `Column` components would span 25% each,
 and so on.
 
-<Preview>
-  <Story id="components-flexgrid--auto-columns" />
-</Preview>
+<Canvas
+  of={FlexGridStories.AutoColumns}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.AutoColumns),
+    },
+  ]}
+/>
 
 ## Offset columns
 
@@ -163,13 +219,19 @@ breakpoint. At the medium breakpoint, it will be offset by two columns.
 <Column sm={2} md={{ span: 4, offset: 2 }} />
 ```
 
-<Preview>
-  <Story id="components-flexgrid--offset" />
-</Preview>
+<Canvas
+  of={FlexGridStories.Offset}
+  additionalActions={[
+    {
+      title: 'Open in Stackblitz',
+      onClick: () => stackblitzPrefillConfig(FlexGridStories.Offset),
+    },
+  ]}
+/>
 
 ## Component API
 
-<Props />
+<ArgTypes />
 
 ### Using the `as` prop
 
@@ -244,6 +306,32 @@ at the small breakpoint.
 
 `FlexGrid` does not support nested grids. For nested grids, use the `Grid`
 (`CSSGrid`) component.
+
+### Why are the FlexGrid styles not working?
+
+FlexGrid styles are not emitted by default. You must opt in to emitting the
+styling via one of the following options:
+
+```scss
+/* Option 1: Turn on the feature flag */
+
+@use '@carbon/react' with (
+  $use-flexbox-grid: true
+);
+```
+
+```scss
+/* Option 2: Use the flexgrid module */
+
+@use '@carbon/react/scss/grid/flexbox';
+```
+
+```scss
+/* Option 3: Use the grid module and call the flex-grid mixin */
+
+@use '@carbon/react/scss/grid';
+@include grid.flex-grid();
+```
 
 ## Feedback
 

@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,15 +19,18 @@ export default {
   },
 };
 
-export const Default = () => {
-  return <Loading className={'some-class'} withOverlay={false} />;
-};
-
-export const Playground = (args) => {
+export const Default = (args) => {
   return <Loading className={'some-class'} {...args} />;
 };
 
-Playground.argTypes = {
+Default.args = {
+  active: true,
+  withOverlay: false,
+  small: false,
+  description: 'Loading',
+};
+
+Default.argTypes = {
   children: {
     table: {
       disable: true,
@@ -48,24 +51,20 @@ Playground.argTypes = {
     control: {
       type: 'boolean',
     },
-    defaultValue: true,
   },
   withOverlay: {
     control: {
       type: 'boolean',
     },
-    defaultValue: false,
   },
   small: {
     control: {
       type: 'boolean',
     },
-    defaultValue: false,
   },
   description: {
     control: {
       type: 'text',
     },
-    defaultValue: 'Loading',
   },
 };

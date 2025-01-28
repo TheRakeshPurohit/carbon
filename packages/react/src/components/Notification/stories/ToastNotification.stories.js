@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,27 +23,22 @@ export default {
     kind: 'error',
     lowContrast: false,
     hideCloseButton: false,
-    ariaLabel: 'closes notification',
+    ['aria-label']: 'closes notification',
     statusIconDescription: 'notification',
     onClose: action('onClose'),
     onCloseButtonClick: action('onCloseButtonClick'),
   },
 };
 
-export const Default = () => (
-  <ToastNotification
-    role="status"
-    caption="00:00:00 AM"
-    timeout={0}
-    title="Notification title"
-    subtitle="Subtitle text goes here"
-  />
-);
+export const Default = (args) => <ToastNotification {...args} />;
 
-export const Playground = (args) => <ToastNotification {...args} />;
-
-Playground.argTypes = {
+Default.argTypes = {
   actionButtonLabel: {
+    table: {
+      disable: true,
+    },
+  },
+  ['aria-label']: {
     table: {
       disable: true,
     },
@@ -59,10 +54,10 @@ Playground.argTypes = {
     },
   },
   onClose: {
-    action: 'clicked',
+    action: 'onClose',
   },
   onCloseButtonClick: {
-    action: 'clicked',
+    action: 'onCloseButtonClick',
   },
   children: {
     table: {
@@ -75,7 +70,7 @@ Playground.argTypes = {
     },
   },
 };
-Playground.args = {
+Default.args = {
   role: 'status',
   caption: '00:00:00 AM',
   timeout: 0,

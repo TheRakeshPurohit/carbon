@@ -5,30 +5,110 @@
 // LICENSE file in the root directory of this source tree.
 //
 
+@use 'sass:map';
+
+@use '../button';
+@use '../overflow-menu';
 @use '../../config' as *;
 @use '../../motion' as *;
 @use '../../spacing' as *;
 @use '../../theme' as *;
 @use '../../type' as *;
-@use '../../utilities/convert' as *;
-@use '../../utilities/focus-outline' as *;
+@use '../../utilities/convert';
 @use '../../utilities/button-reset';
+@use '../../utilities/focus-outline' as *;
+@use '../../utilities/custom-property';
+@use '../../utilities/layout';
 
 /// Contained List styles
 /// @access public
 /// @group contained-list
 @mixin contained-list {
+  .#{$prefix}--contained-list {
+    @include layout.use('size', $default: 'lg', $min: 'sm', $max: 'xl');
+    @include layout.use('density', $default: 'normal');
+  }
+
+  .#{$prefix}--contained-list .#{$prefix}--tag {
+    @include layout.redefine-tokens(
+      (
+        size: (
+          height: (
+            xs: convert.to-rem(18px),
+            sm: convert.to-rem(18px),
+            md: convert.to-rem(24px),
+            lg: convert.to-rem(24px),
+            xl: convert.to-rem(24px),
+          ),
+        ),
+      )
+    );
+
+    @include layout.use('size', $default: 'md', $min: 'sm', $max: 'xl');
+  }
+
+  .#{$prefix}--contained-list > ul {
+    padding: 0;
+    margin: 0;
+  }
+
   .#{$prefix}--contained-list__header {
     position: sticky;
     z-index: 1;
-    top: 0;
     display: flex;
     align-items: center;
-    padding-inline: $spacing-05;
+    inset-block-start: 0;
+    padding-inline: layout.density('padding-inline');
   }
 
   .#{$prefix}--contained-list__label {
-    width: 100%;
+    inline-size: 100%;
+  }
+
+  .#{$prefix}--contained-list .#{$prefix}--search {
+    position: sticky;
+    z-index: 1;
+    inset-block-start: layout.size('height');
+
+    &.#{$prefix}--search--expandable .#{$prefix}--search-input {
+      background-color: $field;
+    }
+  }
+
+  .#{$prefix}--contained-list .#{$prefix}--search .#{$prefix}--search-input {
+    background-color: $background;
+    border-block-end: 1px solid $border-subtle;
+  }
+
+  .#{$prefix}--contained-list
+    .#{$prefix}--search
+    .#{$prefix}--search-close::before {
+    display: none;
+  }
+
+  .#{$prefix}--contained-list .#{$prefix}--search .#{$prefix}--search-close {
+    border-inline-end: 2px solid transparent;
+    outline: none;
+
+    &:focus {
+      @include focus-outline('outline');
+    }
+  }
+
+  .#{$prefix}--contained-list
+    .#{$prefix}--search
+    .#{$prefix}--search-input
+    ~ .#{$prefix}--search-close:hover {
+    border-block-end: 1px solid transparent;
+  }
+
+  .#{$prefix}--contained-list
+    .#{$prefix}--search
+    .#{$prefix}--search-input:focus
+    ~ .#{$prefix}--search-close:hover {
+    border: 2px solid $focus;
+    border-inline-start: 0;
+    outline: none;
   }
 
   // "On Page" variant
@@ -40,9 +120,9 @@
   .#{$prefix}--contained-list--on-page .#{$prefix}--contained-list__header {
     @include type-style('heading-compact-01');
 
-    height: $spacing-09;
-    border-bottom: 1px solid $border-subtle;
     background-color: $background;
+    block-size: layout.size('height');
+    border-block-end: 1px solid $border-subtle;
     color: $text-primary;
   }
 
@@ -63,8 +143,8 @@
   .#{$prefix}--contained-list--disclosed .#{$prefix}--contained-list__header {
     @include type-style('label-01');
 
-    height: $spacing-07;
     background-color: $layer;
+    block-size: $spacing-07;
     color: $text-secondary;
   }
 
@@ -72,10 +152,16 @@
 
   .#{$prefix}--contained-list-item {
     position: relative;
+    display: list-item;
+    list-style: none;
   }
 
   .#{$prefix}--contained-list-item:not(:first-of-type) {
-    margin-top: -1px;
+    margin-block-start: -1px;
+  }
+
+  .#{$prefix}--contained-list-item__content {
+    box-sizing: border-box;
   }
 
   .#{$prefix}--contained-list-item--clickable
@@ -90,20 +176,35 @@
   .#{$prefix}--contained-list-item__content,
   .#{$prefix}--contained-list-item--clickable
     .#{$prefix}--contained-list-item__content {
+    // https://caniuse.com/mdn-css_types_length_lh
+    --temp-1lh: (
+      #{custom-property.get-var(
+          'body-01-line-height',
+          map.get($body-01, line-height)
+        )} * 1em
+    );
+
     @include type-style('body-01');
 
-    padding: calc(#{$spacing-05} - #{rem(2px)}) $spacing-05;
+    padding: calc(calc((#{layout.size('height')} - var(--temp-1lh)) / 2))
+      layout.density('padding-inline');
     color: $text-primary;
+    min-block-size: layout.size('height');
   }
 
   .#{$prefix}--contained-list-item:not(:last-of-type)::before {
     position: absolute;
-    right: $spacing-05;
-    bottom: 0;
-    left: $spacing-05;
-    height: 1px;
     background-color: $border-subtle;
+    block-size: 1px;
     content: '';
+    inset-block-end: 0;
+    inset-inline: 0;
+  }
+
+  .#{$prefix}--contained-list--inset-rulers
+    .#{$prefix}--contained-list-item:not(:last-of-type)::before {
+    inset-inline: layout.density('padding-inline')
+      layout.density('padding-inline');
   }
 
   .#{$prefix}--contained-list-item--clickable
@@ -132,11 +233,8 @@
     @include focus-outline('outline');
 
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
     content: '';
+    inset: 0;
   }
 
   .#{$prefix}--contained-list-item--with-action
@@ -147,11 +245,10 @@
   .#{$prefix}--contained-list__action,
   .#{$prefix}--contained-list-item__action {
     position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
     display: flex;
     justify-content: flex-end;
+    inset-block-start: 0;
+    inset-inline: 0;
     pointer-events: none;
   }
 
@@ -169,6 +266,6 @@
 
   .#{$prefix}--contained-list-item__icon {
     display: inline-flex;
-    padding-top: $spacing-01;
+    padding-block-start: $spacing-01;
   }
 }

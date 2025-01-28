@@ -10,16 +10,14 @@ on:
         required: true
       APP_PRIVATE_KEY:
         required: true
-      ADD_TO_PROJECT_PAT:
-        required: true
 
 jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Generate token
-        uses: tibdex/github-app-token@v1
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a #v2.1.0
         id: generate_token
         with:
           app_id: ${{ secrets.APP_ID }}
@@ -28,11 +26,3 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
           enabled: true
-  add-to-project:
-    name: Add issue to Design System project
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/add-to-project@v0.3.0
-        with:
-          project-url: https://github.com/orgs/carbon-design-system/projects/39
-          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}

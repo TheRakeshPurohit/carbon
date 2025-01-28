@@ -1,206 +1,169 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2022
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-import { mount } from 'enzyme';
 import React from 'react';
-import Search from './ExpandableSearch';
+import ExpandableSearch from './ExpandableSearch';
+import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 
 const prefix = 'cds';
 
 describe('ExpandableSearch', () => {
-  let wrapper;
+  describe('behaves as expected', () => {
+    it('is not expanded by default', () => {
+      const { container } = render(
+        <ExpandableSearch labelText="test-search" />
+      );
 
-  const container = () => wrapper.find(`.${prefix}--search`);
-  const button = () => wrapper.find('button');
-  const input = () => wrapper.find('input');
-  const label = () => wrapper.find('label');
-
-  const render = (props) => {
-    if (wrapper) {
-      return wrapper.setProps(props);
-    }
-
-    wrapper = mount(<Search labelText="testlabel" {...props} />);
-
-    return wrapper;
-  };
-
-  describe('container', () => {
-    beforeEach(() => {
-      render();
+      // There is not a reliable way to test for expansion other than by class.
+      // We can not use .toBeVisible on the input because the input is hidden
+      // via width, not via `display: none` or similar.
+      expect(container.firstChild).not.toHaveClass(
+        `${prefix}--search--expanded`
+      );
     });
 
-    it('has the class `${prefix}--search--expandable`', () => {
-      const value = container().hasClass(`${prefix}--search--expandable`);
-      expect(value).toEqual(true);
+    it('is expanded by default if expanded prop is set', () => {
+      const { container } = render(
+        <ExpandableSearch isExpanded labelText="test-search" />
+      );
+
+      // There is not a reliable way to test for expansion other than by class.
+      // We can not use .toBeVisible on the input because the input is hidden
+      // via width, not via `display: none` or similar.
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
     });
 
-    describe('expanded', () => {
-      const value = () => container().hasClass(`${prefix}--search--expanded`);
-
-      describe('when input has no content', () => {
-        beforeEach(() => {
-          input().simulate('change', { target: { value: '' } });
-        });
-
-        it('is false', () => {
-          expect(value()).toEqual(false);
-        });
-      });
-
-      describe.skip('when input has content', () => {
-        beforeEach(() => {
-          input().simulate('change', { target: { value: 'text' } });
-        });
-
-        it('is true', () => {
-          expect(value()).toEqual(true);
-        });
-
-        describe('when content is cleared', () => {
-          beforeEach(() => {
-            button().simulate('click');
-          });
-
-          it('is false', () => {
-            expect(value()).toEqual(false);
-          });
-        });
-      });
-    });
-  });
-
-  describe('label', () => {
-    beforeEach(() => {
-      render();
+    it('is renders a defaultValue', () => {
+      render(
+        <ExpandableSearch
+          defaultValue="This is default text"
+          labelText="test-search"
+        />
+      );
+      expect(screen.getByRole('searchbox')).toHaveValue('This is default text');
     });
 
-    it('is rendered', () => {
-      expect(label().text()).toEqual('testlabel');
-    });
-  });
+    it('expands on click', async () => {
+      const { container } = render(
+        <ExpandableSearch labelText="test-search" />
+      );
 
-  describe('onBlur', () => {
-    const onBlur = jest.fn();
+      await userEvent.click(screen.getAllByRole('button')[0]);
 
-    beforeEach(() => {
-      render({ onBlur });
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
     });
 
-    afterEach(() => {
-      onBlur.mockReset();
+    it('expands on enter', async () => {
+      const { container } = render(
+        <ExpandableSearch labelText="test-search" />
+      );
+
+      await screen.getAllByRole('button')[0].focus();
+
+      await userEvent.keyboard('[Enter]');
+
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
     });
 
-    it('is called on blur', () => {
-      input().simulate('blur');
-      expect(onBlur).toHaveBeenCalled();
-    });
-  });
+    it('expands on space', async () => {
+      const { container } = render(
+        <ExpandableSearch labelText="test-search" />
+      );
 
-  describe('onChange', () => {
-    const onChange = jest.fn();
+      await screen.getAllByRole('button')[0].focus();
 
-    beforeEach(() => {
-      render({ onChange });
-    });
+      await userEvent.keyboard('[Space]');
 
-    afterEach(() => {
-      onChange.mockReset();
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
     });
 
-    it('is called on change', () => {
-      input().simulate('change', { target: { value: 'text' } });
-      expect(onChange).toHaveBeenCalled();
-    });
-  });
+    it('places focus on the input after expansion', async () => {
+      render(<ExpandableSearch labelText="test-search" />);
 
-  describe('onClick', () => {
-    const onClick = jest.fn();
+      await userEvent.click(screen.getAllByRole('button')[0]);
 
-    beforeEach(() => {
-      render({ onClick });
+      expect(screen.getByRole('searchbox')).toHaveFocus();
     });
 
-    afterEach(() => {
-      onClick.mockReset();
+    it('supports a ref on the underlying input element', () => {
+      const ref = jest.fn();
+      const { container } = render(
+        <ExpandableSearch labelText="Search" ref={ref} />
+      );
+      expect(ref).toHaveBeenCalledWith(expect.any(HTMLInputElement));
     });
 
-    it('is called on click', () => {
-      input().simulate('click');
-      expect(onClick).toHaveBeenCalled();
-    });
-  });
+    it('closes on blur when the input is empty', async () => {
+      // Render a button next to the search so that there is another focusable element
+      // next to the expandable search to receive focus.
+      const { container } = render(
+        <>
+          <ExpandableSearch labelText="test-search" />
+          <button type="button">second-element</button>
+        </>
+      );
 
-  describe('onClear', () => {
-    const onClear = jest.fn();
+      expect(container.firstChild).not.toHaveClass(
+        `${prefix}--search--expanded`
+      );
 
-    beforeEach(() => {
-      render({ onClear });
-    });
+      await userEvent.click(screen.getAllByRole('button')[0]);
 
-    afterEach(() => {
-      onClear.mockReset();
-    });
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
 
-    describe('when input has no content', () => {
-      beforeEach(() => {
-        input().simulate('change', { target: { value: '' } });
-      });
+      await userEvent.click(screen.getByText('second-element'));
 
-      it('is called on clear', () => {
-        button().simulate('click');
-        expect(onClear).toHaveBeenCalled();
-      });
+      expect(container.firstChild).not.toHaveClass(
+        `${prefix}--search--expanded`
+      );
     });
 
-    describe('when input has content', () => {
-      beforeEach(() => {
-        input().simulate('change', { target: { value: 'text' } });
-      });
+    it('does not close on blur when the input has a value', async () => {
+      // Render a button next to the search so that there is another focusable element
+      // next to the expandable search to receive focus.
+      const { container } = render(
+        <>
+          <ExpandableSearch labelText="test-search" />
+          <button type="button">second-element</button>
+        </>
+      );
 
-      it('is called on clear', () => {
-        button().simulate('click');
-        expect(onClear).toHaveBeenCalled();
-      });
-    });
-  });
+      await userEvent.click(screen.getAllByRole('button')[0]);
+      await userEvent.type(screen.getByRole('searchbox'), 'test-value');
+      await userEvent.click(screen.getByText('second-element'));
 
-  describe('onExpand', () => {
-    const onExpand = jest.fn();
-
-    beforeEach(() => {
-      render({ onExpand });
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
     });
 
-    afterEach(() => {
-      onExpand.mockReset();
-    });
+    it('closes and clears value on escape', async () => {
+      const { container } = render(
+        <ExpandableSearch labelText="test-search" />
+      );
 
-    // This won't work until v11
-    it.skip('is called on focus', () => {
-      input().simulate('focus');
-      expect(onExpand).toHaveBeenCalled();
-    });
-  });
+      await userEvent.click(screen.getAllByRole('button')[0]);
 
-  describe('onFocus', () => {
-    const onFocus = jest.fn();
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
 
-    beforeEach(() => {
-      render({ onFocus });
-    });
+      await userEvent.type(screen.getByRole('searchbox'), 'test-value');
 
-    afterEach(() => {
-      onFocus.mockReset();
-    });
+      expect(screen.getByRole('searchbox')).toHaveValue('test-value');
 
-    it('is called on focus', () => {
-      input().simulate('focus');
-      expect(onFocus).toHaveBeenCalled();
+      await userEvent.keyboard('[Escape]');
+
+      expect(screen.getByRole('searchbox')).not.toHaveValue('test-value');
+
+      expect(container.firstChild).toHaveClass(`${prefix}--search--expanded`);
+
+      await userEvent.keyboard('[Escape]');
+
+      expect(container.firstChild).not.toHaveClass(
+        `${prefix}--search--expanded`
+      );
     });
   });
 });

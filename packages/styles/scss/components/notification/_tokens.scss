@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2018, 2018
+// Copyright IBM Corp. 2018, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -84,30 +84,15 @@ $notification-background-info: (
 ) !default;
 
 $notification-background-warning: (
-  fallback:
-    color.mix(
-      map.get(notification.$color-map, yellow-30),
-      map.get(notification.$color-map, white-0),
-      15%
-    ),
+  fallback: map.get(notification.$notification-background-warning, white-theme),
   values: (
     (
       theme: themes.$white,
-      value:
-        color.mix(
-          map.get(notification.$color-map, yellow-30),
-          map.get(notification.$color-map, white-0),
-          15%
-        ),
+      value: map.get(notification.$notification-background-warning, white-theme),
     ),
     (
       theme: themes.$g10,
-      value:
-        color.mix(
-          map.get(notification.$color-map, yellow-30),
-          map.get(notification.$color-map, white-0),
-          15%
-        ),
+      value: map.get(notification.$notification-background-warning, g-10),
     ),
     (
       theme: themes.$g90,
@@ -125,11 +110,11 @@ $notification-action-hover: (
   values: (
     (
       theme: themes.$white,
-      value: map.get(notification.$notification-background-info, white-theme),
+      value: map.get(notification.$notification-action-hover, white-theme),
     ),
     (
       theme: themes.$g10,
-      value: map.get(notification.$notification-background-info, g-10),
+      value: map.get(notification.$notification-action-hover, g-10),
     ),
     (
       theme: themes.$g90,

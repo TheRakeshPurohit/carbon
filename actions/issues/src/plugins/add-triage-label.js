@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2020, 2020
+ * Copyright IBM Corp. 2020, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ const plugin = {
     });
 
     if (!hasTriageLabel) {
-      await octokit.issues.addLabels({
+      await octokit.rest.issues.addLabels({
         owner: repository.owner.login,
         repo: repository.name,
         issue_number: issue.number,

@@ -1,16 +1,17 @@
 //
-// Copyright IBM Corp. 2016, 2018
+// Copyright IBM Corp. 2016, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
 //
 
+@use '../action';
 @use '../../../config' as *;
 @use '../../../motion' as *;
 @use '../../../spacing' as *;
 @use '../../../theme' as *;
 @use '../../../utilities/button-reset';
-@use '../../../utilities/convert' as *;
+@use '../../../utilities/convert';
 @use '../../../utilities/focus-outline' as *;
 @use '../../../utilities/high-contrast-mode' as *;
 
@@ -23,7 +24,7 @@
   //----------------------------------------------------------------------------
   //first row top border
   .#{$prefix}--data-table tr.#{$prefix}--parent-row:first-of-type td {
-    border-top: 1px solid $border-subtle;
+    border-block-start: 1px solid $border-subtle;
   }
 
   //----------------------------------------------------------------------------
@@ -31,27 +32,27 @@
   //----------------------------------------------------------------------------
   // default styles
   .#{$prefix}--expandable-row--hidden td {
-    width: auto;
     padding: $spacing-05;
-    border-top: 0;
+    border-block-start: 0;
+    inline-size: auto;
   }
 
   //child row hidden
   tr.#{$prefix}--parent-row:not(.#{$prefix}--expandable-row)
     + tr[data-child-row] {
-    height: 0;
+    block-size: 0;
     transition: height $duration-moderate-01 motion(standard, productive);
   }
 
   tr.#{$prefix}--parent-row:not(.#{$prefix}--expandable-row)
     + tr[data-child-row]
     td {
-    padding-top: 0;
-    padding-bottom: 0;
     border: 0;
     background-color: $layer-hover;
-    transition: padding $duration-moderate-01 motion(standard, productive),
-      background-color $duration-moderate-01 motion(standard, productive);
+    padding-block: 0;
+    transition:
+      padding $duration-moderate-01 motion(standard, productive),
+      background-color $duration-fast-01 motion(standard, productive);
   }
 
   tr.#{$prefix}--parent-row:not(.#{$prefix}--expandable-row)
@@ -59,33 +60,59 @@
     td
     .#{$prefix}--child-row-inner-container {
     overflow: hidden;
-    max-height: 0;
+    max-block-size: 0;
   }
 
   //child row visible
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row + tr[data-child-row] {
-    transition: height $duration-moderate-01 motion(standard, productive);
+    transition:
+      height $duration-moderate-01 motion(standard, productive),
+      background-color $duration-fast-01 motion(standard, productive);
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row + tr[data-child-row] td {
-    padding-left: 4rem;
-    border-bottom: 1px solid $border-subtle;
-    transition: padding-bottom $duration-fast-02 motion(standard, productive),
-      transform $duration-fast-02 motion(standard, productive),
-      background-color $duration-fast-02 motion(standard, productive);
+    border-block-end: 1px solid $border-subtle;
+    padding-inline-start: 3.5rem;
+    transition:
+      padding-bottom $duration-moderate-01 motion(standard, productive),
+      transform $duration-moderate-01 motion(standard, productive);
+  }
+
+  // Increase padding inside expandable row when only a slug OR checkbox is present in row
+  tbody:has(> tr.#{$prefix}--data-table--slug-row)
+    > tr.#{$prefix}--expandable-row[data-child-row]
+    td,
+  tbody:has(> tr.#{$prefix}--data-table--ai-label-row)
+    > tr.#{$prefix}--expandable-row[data-child-row]
+    td,
+  tbody:has(td.#{$prefix}--table-column-checkbox)
+    > tr.#{$prefix}--expandable-row[data-child-row]
+    td {
+    padding-inline-start: convert.to-rem(88px);
+  }
+
+  // Increase padding inside expandable row when slug AND checkbox is present in row
+  tbody:has(> tr.#{$prefix}--data-table--ai-label-row):has(
+      td.#{$prefix}--table-column-checkbox
+    )
+    > tr.#{$prefix}--expandable-row[data-child-row]
+    td {
+    padding-inline-start: convert.to-rem(120px);
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row
     + tr[data-child-row]
     td
     .#{$prefix}--child-row-inner-container {
-    max-height: 100%;
+    max-block-size: 100%;
+    padding-block: 1rem;
+    padding-block-end: 1.5rem;
   }
 
   // bottom border overrides
   .#{$prefix}--parent-row.#{$prefix}--expandable-row > td,
   .#{$prefix}--parent-row.#{$prefix}--expandable-row + tr[data-child-row] > td {
-    border-bottom: 1px solid $border-subtle;
+    border-block-end: 1px solid $border-subtle;
     box-shadow: 0 1px $border-subtle;
   }
 
@@ -106,42 +133,44 @@
   tr.#{$prefix}--parent-row:not(.#{$prefix}--expandable-row) td,
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row td,
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row {
-    transition: height $duration-moderate-02 motion(standard, productive),
-      background-color $duration-fast-02 motion(standard, productive);
+    transition:
+      height $duration-moderate-01 motion(standard, productive),
+      background-color $duration-fast-01 motion(standard, productive),
+      border-color $duration-fast-01 motion(standard, productive);
   }
 
   // hovering on collapsed parent
   tr.#{$prefix}--parent-row:not(.#{$prefix}--expandable-row):first-of-type:hover
     td {
-    border-top: 1px solid $border-subtle;
-    border-bottom: 1px solid $border-subtle;
+    border-block-end: 1px solid $border-subtle;
+    border-block-start: 1px solid $border-subtle;
   }
 
   // hovering on expanded parent
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row:hover td {
-    border-top: 1px solid $border-subtle;
-    border-bottom: 1px solid $border-subtle;
     background-color: $layer-hover;
+    border-block-end: 1px solid $border-subtle;
+    border-block-start: 1px solid $border-subtle;
     color: $text-primary;
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row:hover td:first-of-type {
     // First td doesn't have a visible border
-    border-bottom: 1px solid $layer-hover;
+    border-block-end: 1px solid $layer-hover;
   }
 
   // Child row when hovering on expanded parent
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row:hover
     + tr[data-child-row]
     td {
-    border-bottom: 1px solid $border-subtle;
     background-color: $layer-hover;
+    border-block-end: 1px solid $border-subtle;
     color: $text-primary;
   }
 
   //hovering on expanded child row
   tr.#{$prefix}--expandable-row--hover + tr[data-child-row] td {
-    border-bottom: 1px solid $border-subtle;
+    border-block-end: 1px solid $border-subtle;
   }
 
   //hovering on expanded child row (class added to parent)
@@ -150,23 +179,31 @@
   }
 
   tr.#{$prefix}--expandable-row--hover td {
-    border-top: 1px solid $border-subtle;
-    border-bottom: 1px solid $border-subtle;
     background-color: $layer-hover;
+    border-block-end: 1px solid $border-subtle;
+    border-block-start: 1px solid $border-subtle;
     color: $text-primary;
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row.#{$prefix}--expandable-row--hover
     td:first-of-type {
     // First parent td doesn't have visible bottom border
-    border-bottom: 1px solid transparent;
+    border-block-end: 1px solid transparent;
   }
 
   //----------------------------------------------------------------------------
   // Expand icon column
   //----------------------------------------------------------------------------
   .#{$prefix}--data-table td.#{$prefix}--table-expand {
-    border-bottom: 1px solid $border-subtle;
+    border-block-end: 1px solid $border-subtle-01;
+  }
+
+  .#{$prefix}--layer-two .#{$prefix}--data-table td.#{$prefix}--table-expand {
+    border-block-end: 1px solid $border-subtle-02;
+  }
+
+  .#{$prefix}--layer-three .#{$prefix}--data-table td.#{$prefix}--table-expand {
+    border-block-end: 1px solid $border-subtle-03;
   }
 
   .#{$prefix}--data-table
@@ -175,8 +212,15 @@
   .#{$prefix}--data-table
     td.#{$prefix}--table-expand
     + .#{$prefix}--table-column-checkbox {
-    padding-right: rem(6px);
-    padding-left: rem(6px);
+    padding-inline: convert.to-rem(6px) convert.to-rem(6px);
+  }
+
+  // Hide bottom border of checkbox column when expanded
+  .#{$prefix}--data-table
+    td.#{$prefix}--table-expand[data-previous-value='collapsed']
+    + .#{$prefix}--table-column-checkbox {
+    border-block-end: 1px solid transparent;
+    box-shadow: none;
   }
 
   .#{$prefix}--data-table
@@ -187,18 +231,18 @@
     td.#{$prefix}--table-expand
     + .#{$prefix}--table-column-checkbox
     + td {
-    padding-left: rem(8px);
+    padding-inline-start: convert.to-rem(8px);
   }
 
   .#{$prefix}--data-table td.#{$prefix}--table-expand,
   .#{$prefix}--data-table th.#{$prefix}--table-expand {
     padding: 0.5rem;
-    padding-right: 0;
+    padding-inline-end: 0;
   }
 
   .#{$prefix}--data-table
     td.#{$prefix}--table-expand[data-previous-value='collapsed'] {
-    border-bottom: 1px solid transparent;
+    border-block-end: 1px solid transparent;
   }
 
   .#{$prefix}--table-expand[data-previous-value='collapsed']
@@ -211,13 +255,44 @@
     @include button-reset.reset('false');
 
     display: inline-flex;
-    width: 100%;
-    // Account for the border in `.bx--table-expand`
-    height: calc(100% + 1px);
     align-items: center;
     justify-content: center;
-    padding: 0 0.5rem;
+    padding: 0 $spacing-03;
+    // Account for the border in `.cds--table-expand`
+    block-size: calc(100% + 1px);
+    inline-size: 100%;
     vertical-align: inherit;
+  }
+
+  .#{$prefix}--data-table--top-aligned-body
+    td
+    .#{$prefix}--table-expand__button,
+  .#{$prefix}--data-table--top-aligned-header
+    th
+    .#{$prefix}--table-expand__button {
+    align-items: start;
+    block-size: convert.to-rem(32px);
+    padding-block-start: $spacing-03;
+  }
+
+  .#{$prefix}--data-table--top-aligned-body.#{$prefix}--data-table--xs
+    td
+    .#{$prefix}--table-expand__button,
+  .#{$prefix}--data-table--top-aligned-header.#{$prefix}--data-table--xs
+    th
+    .#{$prefix}--table-expand__button {
+    block-size: convert.to-rem(24px);
+    padding-block-start: $spacing-02;
+  }
+
+  .#{$prefix}--data-table--top-aligned-body.#{$prefix}--data-table--md
+    td
+    .#{$prefix}--table-expand__button,
+  .#{$prefix}--data-table--top-aligned-header.#{$prefix}--data-table--md
+    th
+    .#{$prefix}--table-expand__button {
+    margin-block-start: -$spacing-02;
+    padding-block-start: $spacing-03;
   }
 
   .#{$prefix}--table-expand__button:focus {
@@ -232,8 +307,7 @@
   }
 
   .#{$prefix}--data-table--xl .#{$prefix}--table-expand__button {
-    width: rem(32px);
-    padding: 0;
+    inline-size: convert.to-rem(32px);
   }
 
   // fix expanded parent separating border length
@@ -241,12 +315,12 @@
     td.#{$prefix}--table-expand
     + td::after {
     position: absolute;
-    bottom: rem(-1px);
-    left: 0;
-    width: rem(8px);
-    height: rem(1px);
-    background: $layer-accent;
+    background-color: $layer-accent;
+    block-size: convert.to-rem(1px);
     content: '';
+    inline-size: convert.to-rem(8px);
+    inset-block-end: convert.to-rem(-1px);
+    inset-inline-start: 0;
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row:hover
@@ -255,7 +329,7 @@
   tr.#{$prefix}--parent-row.#{$prefix}--expandable-row.#{$prefix}--expandable-row--hover
     td.#{$prefix}--table-expand
     + td::after {
-    background: $layer-hover;
+    background-color: $layer-hover;
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected
@@ -269,14 +343,14 @@
   //----------------------------------------------------------------------------
   .#{$prefix}--data-table--zebra tbody tr[data-parent-row]:nth-child(4n + 3) td,
   .#{$prefix}--data-table--zebra tbody tr[data-child-row]:nth-child(4n + 4) td {
-    border-bottom: 1px solid $layer;
+    border-block-end: 1px solid $layer;
   }
 
   .#{$prefix}--data-table--zebra tbody tr[data-parent-row]:nth-child(4n + 1) td,
   .#{$prefix}--data-table--zebra tbody tr[data-child-row]:nth-child(4n + 2) td {
-    border-top: 1px solid $layer-accent;
-    border-bottom: 1px solid $layer-accent;
     background-color: $layer-accent;
+    border-block-end: 1px solid $layer-accent;
+    border-block-start: 1px solid $layer-accent;
   }
 
   .#{$prefix}--data-table--zebra tr.#{$prefix}--parent-row td,
@@ -284,9 +358,10 @@
     tr.#{$prefix}--parent-row.#{$prefix}--expandable-row
     + tr[data-child-row]
     td {
-    transition: transform $duration-moderate-01 motion(standard, productive),
-      border-bottom $duration-moderate-01 motion(standard, productive),
-      border-top $duration-moderate-01 motion(standard, productive);
+    transition:
+      transform $duration-moderate-01 motion(standard, productive),
+      border-bottom $duration-fast-01 motion(standard, productive),
+      border-top $duration-fast-01 motion(standard, productive);
   }
 
   .#{$prefix}--data-table--zebra tbody tr[data-parent-row]:hover td,
@@ -296,49 +371,52 @@
     + tr[data-child-row]
     td,
   .#{$prefix}--data-table--zebra tbody tr[data-child-row]:hover td {
-    border-top: 1px solid $layer-hover;
-    border-bottom: 1px solid $layer-hover;
     background-color: $layer-hover;
+    border-block-end: 1px solid $layer-hover;
+    border-block-start: 1px solid $layer-hover;
   }
 
   .#{$prefix}--data-table--zebra
     tr.#{$prefix}--parent-row.#{$prefix}--expandable-row.#{$prefix}--expandable-row--hover
     td {
-    border-top: 1px solid $layer-hover;
-    border-bottom: 1px solid $layer-hover;
-    background: $layer-hover;
+    background-color: $layer-hover;
+    border-block-end: 1px solid $layer-hover;
+    border-block-start: 1px solid $layer-hover;
   }
 
   //----------------------------------------------------------------------------
   // Selected
   //----------------------------------------------------------------------------
   // Parent collapsed
+
+  tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected {
+    background-color: $layer-selected;
+  }
+
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected:first-of-type td {
-    border-top: 1px solid $layer-active;
-    border-bottom: 1px solid $border-subtle;
-    background: $layer-selected;
+    border-block-start: 1px solid $layer-active;
     box-shadow: 0 1px $layer-active;
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected td {
-    border-bottom: 1px solid transparent;
-    background: $layer-selected;
+    border-block-end: 1px solid $layer-active;
     box-shadow: 0 1px $layer-active;
     color: $text-primary;
   }
 
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected:last-of-type td {
-    border-bottom: 1px solid transparent;
-    background: $layer-selected;
+    border-block-end: 1px solid transparent;
     box-shadow: 0 1px $border-subtle;
   }
 
   // Parent collapsed hover
-  tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected:not(.#{$prefix}--expandable-row):hover
+  tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected:not(
+      .#{$prefix}--expandable-row
+    ):hover
     td {
-    border-top: 1px solid $layer-selected-hover;
-    border-bottom: 1px solid $border-subtle;
-    background: $layer-selected-hover;
+    background-color: $layer-selected-hover;
+    border-block-end: 1px solid $border-subtle;
+    border-block-start: 1px solid $layer-selected-hover;
     box-shadow: 0 1px $layer-selected-hover;
   }
 
@@ -347,7 +425,7 @@
     td,
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected.#{$prefix}--expandable-row
     td:first-of-type {
-    border-bottom: 1px solid transparent;
+    border-block-end: 1px solid transparent;
     // No visible border when expanded
     box-shadow: 0 1px $layer-selected;
   }
@@ -361,9 +439,9 @@
     td,
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected.#{$prefix}--expandable-row--hover
     td:first-of-type {
-    border-top: 1px solid $layer-selected-hover;
-    border-bottom: 1px solid transparent;
-    background: $layer-selected-hover;
+    background-color: $layer-selected-hover;
+    border-block-end: 1px solid transparent;
+    border-block-start: 1px solid $layer-selected-hover;
     box-shadow: 0 1px $layer-selected-hover;
   }
 
@@ -371,9 +449,9 @@
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected.#{$prefix}--expandable-row
     + tr[data-child-row]
     td {
-    border-top: 1px solid $layer-active;
-    border-bottom: 1px solid $border-subtle;
     background-color: $layer-hover;
+    border-block-end: 1px solid $border-subtle;
+    border-block-start: 1px solid $layer-active;
     box-shadow: 0 1px $layer-active;
     color: $text-primary;
   }
@@ -381,8 +459,8 @@
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected.#{$prefix}--expandable-row
     + tr[data-child-row]:last-of-type
     td {
-    padding-bottom: rem(24px);
     box-shadow: inset 0 -1px $layer-active;
+    padding-block-end: convert.to-rem(24px);
   }
 
   // Child row expanded hover
@@ -392,7 +470,39 @@
   tr.#{$prefix}--parent-row.#{$prefix}--data-table--selected.#{$prefix}--expandable-row--hover
     + tr[data-child-row]
     td {
-    background: $layer-selected;
+    background-color: $layer-selected;
+  }
+
+  // Slug styles
+  .#{$prefix}--parent-row .#{$prefix}--table-column-slug,
+  .#{$prefix}--parent-row
+    .#{$prefix}--table-column-slug
+    + td.#{$prefix}--table-expand[data-previous-value='collapsed'],
+  .#{$prefix}--parent-row .#{$prefix}--table-column-decorator,
+  .#{$prefix}--parent-row
+    .#{$prefix}--table-column-decorator
+    + td.#{$prefix}--table-expand[data-previous-value='collapsed'] {
+    box-shadow: none;
+  }
+
+  .#{$prefix}--parent-row.#{$prefix}--expandable-row
+    .#{$prefix}--table-column-slug,
+  .#{$prefix}--parent-row.#{$prefix}--expandable-row
+    .#{$prefix}--table-column-slug
+    + td.#{$prefix}--table-expand[data-previous-value='collapsed'],
+  .#{$prefix}--parent-row.#{$prefix}--expandable-row
+    .#{$prefix}--table-column-decorator,
+  .#{$prefix}--parent-row.#{$prefix}--expandable-row
+    .#{$prefix}--table-column-decorator
+    + td.#{$prefix}--table-expand[data-previous-value='collapsed'] {
+    border-block-end: 1px solid transparent;
+  }
+
+  .#{$prefix}--data-table--slug-row td,
+  .#{$prefix}--data-table tr.#{$prefix}--data-table--slug-row:hover td,
+  .#{$prefix}--data-table--ai-label-row td,
+  .#{$prefix}--data-table tr.#{$prefix}--data-table--ai-label-row:hover td {
+    border-block-start: 1px solid transparent;
   }
 
   // Windows HCM fix
@@ -400,7 +510,6 @@
     @include high-contrast-mode('focus');
   }
 
-  // stylelint-disable-next-line no-duplicate-selectors
   .#{$prefix}--table-expand__svg {
     @include high-contrast-mode('icon-fill');
   }

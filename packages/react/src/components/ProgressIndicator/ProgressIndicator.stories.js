@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,8 +23,27 @@ export default {
   },
 };
 
-export const Default = () => (
-  <ProgressIndicator>
+export const Interactive = () => (
+  <ProgressIndicator currentIndex={1} onChange={() => alert('Clicked')}>
+    <ProgressStep
+      label="Click me"
+      description="Step 1: Register a onChange event"
+    />
+    <ProgressStep
+      label="Really long label"
+      description="The progress indicator will listen for clicks on the steps"
+    />
+    <ProgressStep
+      label="Third step"
+      description="The progress indicator will listen for clicks on the steps"
+    />
+  </ProgressIndicator>
+);
+
+export const Skeleton = () => <ProgressIndicatorSkeleton />;
+
+export const Default = (args) => (
+  <ProgressIndicator {...args}>
     <ProgressStep
       complete
       label="First step"
@@ -54,21 +73,35 @@ export const Default = () => (
   </ProgressIndicator>
 );
 
-export const Interactive = () => (
-  <ProgressIndicator currentIndex={1} onChange={() => alert('Clicked')}>
-    <ProgressStep
-      label="Click me"
-      description="Step 1: Register a onChange event"
-    />
-    <ProgressStep
-      label="Really long label"
-      description="The progress indicator will listen for clicks on the steps"
-    />
-    <ProgressStep
-      label="Third step"
-      description="The progress indicator will listen for clicks on the steps"
-    />
-  </ProgressIndicator>
-);
+Default.args = {
+  currentIndex: 0,
+  spaceEqually: false,
+  vertical: false,
+};
 
-export const Skeleton = () => <ProgressIndicatorSkeleton />;
+Default.argTypes = {
+  children: {
+    table: {
+      disable: true,
+    },
+  },
+  className: {
+    table: {
+      disable: true,
+    },
+  },
+  onChange: {
+    table: {
+      disable: true,
+    },
+  },
+  currentIndex: {
+    control: { type: 'number' },
+  },
+  spaceEqually: {
+    control: { type: 'boolean' },
+  },
+  vertical: {
+    control: { type: 'boolean' },
+  },
+};

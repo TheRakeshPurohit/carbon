@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2018, 2018
+// Copyright IBM Corp. 2018, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -27,7 +27,7 @@
 /// @group @carbon/type
 $type-scale: ();
 @for $i from 1 through 23 {
-  $type-scale: list.append($type-scale, layout.rem(get-type-size($i)));
+  $type-scale: list.append($type-scale, layout.to-rem(get-type-size($i)));
 }
 
 /// Get the value of a specific step in the type scale

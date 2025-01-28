@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,83 +7,59 @@
 
 'use strict';
 
-const { expect, test } = require('@playwright/test');
+const { test } = require('@playwright/test');
 const { themes } = require('../../test-utils/env');
-const { snapshotStory, visitStory } = require('../../test-utils/storybook');
+const { snapshotStory } = require('../../test-utils/storybook');
 
 test.describe('UIShell', () => {
   themes.forEach((theme) => {
     test.describe(theme, () => {
-      test('header base @vrt', async ({ page }) => {
+      test('header w/ actions and right panel @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--header-base',
+          id: 'components-ui-shell-header--header-w-actions-and-right-panel',
           theme,
         });
       });
 
-      test('header base w/ navigation @vrt', async ({ page }) => {
+      test('header w/ actions and switcher @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-navigation',
+          id: 'components-ui-shell-header--header-w-actions-and-switcher',
           theme,
         });
       });
 
-      test('header base w/ actions @vrt', async ({ page }) => {
+      test('header w/ navigation @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-actions',
+          id: 'components-ui-shell-header--header-w-navigation',
           theme,
         });
       });
 
-      test('header base w/ skiptocontent @vrt', async ({ page }) => {
-        await snapshotStory(page, {
-          component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-skip-to-content',
-          theme,
-        });
-      });
-
-      test('header base w/ navigation and actions @vrt', async ({ page }) => {
-        await snapshotStory(page, {
-          component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-navigation-and-actions',
-          theme,
-        });
-      });
-
-      test('header base w/ navigation, actions and sidenav @vrt', async ({
+      test('header w/ navigation, actions and sidenav @vrt', async ({
         page,
       }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-navigation-actions-and-side-nav',
+          id: 'components-ui-shell-header--header-w-navigation-actions-and-side-nav',
           theme,
         });
       });
 
-      test('header base w/ sidenav @vrt', async ({ page }) => {
+      test('header w/ navigation and actions @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-side-nav',
+          id: 'components-ui-shell-header--header-w-navigation-and-actions',
           theme,
         });
       });
 
-      test('header base w/ actions and right panel @vrt', async ({ page }) => {
+      test('header w/ sidenav @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-actions-and-right-panel',
-          theme,
-        });
-      });
-
-      test('header base w/ actions and switcher @vrt', async ({ page }) => {
-        await snapshotStory(page, {
-          component: 'UIShell',
-          id: 'components-ui-shell--header-base-w-actions-and-switcher',
+          id: 'components-ui-shell-header--header-w-side-nav',
           theme,
         });
       });
@@ -91,15 +67,7 @@ test.describe('UIShell', () => {
       test('fixed sidenav @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--fixed-side-nav',
-          theme,
-        });
-      });
-
-      test('fixed sidenav w/ icons @vrt', async ({ page }) => {
-        await snapshotStory(page, {
-          component: 'UIShell',
-          id: 'components-ui-shell--fixed-side-nav-w-icons',
+          id: 'components-ui-shell-sidenav--fixed-side-nav',
           theme,
         });
       });
@@ -107,23 +75,22 @@ test.describe('UIShell', () => {
       test('fixed sidenav w/ divider @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--fixed-side-nav-w-divider',
+          id: 'components-ui-shell-sidenav--fixed-side-nav-w-divider',
           theme,
         });
       });
 
-      test('sidenav rail @vrt', async ({ page }) => {
+      test('fixed sidenav w/ icons @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--side-nav-rail',
+          id: 'components-ui-shell-sidenav--fixed-side-nav-w-icons',
           theme,
         });
       });
-
       test('sidenav rail w/header @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--side-nav-rail-w-header',
+          id: 'components-ui-shell-sidenav--side-nav-rail-w-header',
           theme,
         });
       });
@@ -131,21 +98,10 @@ test.describe('UIShell', () => {
       test('sidenav w/ large side nav items @vrt', async ({ page }) => {
         await snapshotStory(page, {
           component: 'UIShell',
-          id: 'components-ui-shell--side-nav-w-large-side-nav-items',
+          id: 'components-ui-shell-sidenav--side-nav-w-large-side-nav-items',
           theme,
         });
       });
     });
-  });
-
-  test('accessibility-checker @avt', async ({ page }) => {
-    await visitStory(page, {
-      component: 'UIShell',
-      id: 'components-ui-shell--header-base',
-      globals: {
-        theme: 'white',
-      },
-    });
-    await expect(page).toHaveNoACViolations('UIShell');
   });
 });

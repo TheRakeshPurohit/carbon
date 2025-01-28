@@ -8,16 +8,17 @@
 import React from 'react';
 import { WarningFilled, WarningAltFilled } from '@carbon/icons-react';
 import { usePrefix } from './usePrefix';
+import { Text } from '../components/Text';
 
 /**
  * @typedef {object} InputProps
  * @property {string} id - The input's id
- * @property {boolean} readOnly - Whether the input should be readonly
+ * @property {boolean | undefined} readOnly - Whether the input should be readonly
  * @property {boolean} disabled - Whether the input should be disabled
  * @property {boolean} invalid - Whether the input should be marked as invalid
- * @property {string} invalidText - The validation message displayed in case the input is considered invalid
+ * @property {React.ReactNode | undefined} invalidText - The validation message displayed in case the input is considered invalid
  * @property {boolean} warn - Whether the input should be in warning state
- * @property {string} warnText - The validation message displayed in case the input is in warning state
+ * @property {React.ReactNode | undefined} warnText - The validation message displayed in case the input is in warning state
  */
 
 /**
@@ -25,6 +26,7 @@ import { usePrefix } from './usePrefix';
  * @property {boolean} disabled - Whether the input is disabled
  * @property {boolean} invalid - Whether the input is invalid (takes precedence over warn)
  * @property {string} invalidId - The invalid message's id
+ * @property {string} helperId - id used for helper text
  * @property {boolean} warn - Whether the input is in warning state
  * @property {string} warnId - The warning message's id
  * @property {React.ReactNode | null} validation – React node rendering the appropriate validation message (if any)
@@ -68,20 +70,22 @@ export function useNormalizedInputProps({
   if (normalizedProps.invalid) {
     normalizedProps.icon = WarningFilled;
     normalizedProps.validation = (
-      <div
+      <Text
+        as="div"
         className={`${prefix}--form-requirement`}
         id={normalizedProps.invalidId}>
         {invalidText}
-      </div>
+      </Text>
     );
   } else if (normalizedProps.warn) {
     normalizedProps.icon = WarningAltFilled;
     normalizedProps.validation = (
-      <div
+      <Text
+        as="div"
         className={`${prefix}--form-requirement`}
         id={normalizedProps.warnId}>
         {warnText}
-      </div>
+      </Text>
     );
   }
 

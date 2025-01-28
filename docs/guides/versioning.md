@@ -6,9 +6,10 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [`carbon-components-react`](#carbon-components-react)
+- [`carbon-components-react`, `@carbon/react`](#carbon-components-react-carbonreact)
   - [Changes](#changes)
   - [Examples](#examples)
+    - [A change is made to component typings/definitions](#a-change-is-made-to-component-typingsdefinitions)
     - [A new prop is added to a component](#a-new-prop-is-added-to-a-component)
     - [An existing prop is deprecated](#an-existing-prop-is-deprecated)
     - [An existing prop is removed](#an-existing-prop-is-removed)
@@ -17,6 +18,8 @@
     - [A `PropTypes.func` prop type is changed to have different arguments](#a-proptypesfunc-prop-type-is-changed-to-have-different-arguments)
     - [A `PropTypes.func` prop type is changed to have additional arguments](#a-proptypesfunc-prop-type-is-changed-to-have-additional-arguments)
     - [A `PropTypes.func` prop type is changed to have fewer arguments](#a-proptypesfunc-prop-type-is-changed-to-have-fewer-arguments)
+    - [The DOM node that an `id` corresponds to is changed](#the-dom-node-that-an-id-corresponds-to-is-changed)
+    - [The DOM node that an `aria-label` corresponds to is changed](#the-dom-node-that-an-aria-label-corresponds-to-is-changed)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- prettier-ignore-end -->
@@ -80,8 +83,7 @@ may shift and types could become outdated.
 
 If a typing is out of date or incorrect, please let us know by opening an issue
 or even better, propose a fix via PR! We appreciate the community's involvement
-in this effort to keep component types up to date and as correct as possible!
-:pray:
+in this effort to keep component types up to date and as correct as possible! 🙏
 
 #### A new prop is added to a component
 
@@ -264,3 +266,25 @@ values are passed along to a given element in the DOM. While the label should
 stay consistent over time, you should not rely on either prop pointing to the
 same element over time. In other words, the node that `aria-label` or
 `aria-labelledby` is supplied to may change over time.
+
+#### The DOM node that a `data-testid` corresponds to is changed
+
+semver bump: **minor**, but ideally **major**
+
+We support the placement of `data-testid` attributes on components as a "stable
+selector" for locating elements for testing when
+[all other options](https://testing-library.com/docs/queries/about#priority) are
+exhausted.
+
+We are aware that consumers relying on these in their tests will be impacted
+from any modifications to their placement. For this reason we'll always aim to
+contain any of these changes behind a feature flag or major version bump, but
+under some circumstances the node that this is applied to may change across
+minor versions. In these cases we will make a strong effort to loudly
+communicate the change to notify teams as well as provide automated tooling
+where possible to minimize the impact of the change.
+
+**We highly encourage consuming applications to _avoid using `data-testid`
+unless absolutely necessary_ and instead use more stable
+[relative queries focused on accessible roles](https://testing-library.com/docs/queries/about#priority)
+or HTML5 and ARIA semantics for selecting elements for testing.**

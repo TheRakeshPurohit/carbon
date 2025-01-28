@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,8 +26,8 @@ describe('ButtonSkeleton', () => {
 
   describe('link variant', () => {
     it('should render an <a> when `href` is passed as a prop', () => {
-      const { container } = render(<ButtonSkeleton href="/" />);
-      expect(container.firstChild.tagName).toBe('A');
+      render(<ButtonSkeleton href="/" />);
+      expect(screen.getByRole('button').tagName).toBe('A');
     });
 
     it('should render with [role="button"]', () => {

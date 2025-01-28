@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2020, 2020
+ * Copyright IBM Corp. 2020, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 'use strict';
 
-const Joi = require('joi');
 const { reporter } = require('@carbon/cli-reporter');
 
 /**
@@ -22,7 +21,7 @@ const { reporter } = require('@carbon/cli-reporter');
 function validate(registry, extensions = []) {
   for (const extension of extensions) {
     if (extension.schema) {
-      const { error, value } = Joi.validate(extension.data, extension.schema);
+      const { error, value } = extension.schema.validate(extension.data);
       if (error) {
         const failedAssets = error.details.map(({ path, message }) => ({
           index: path[0],

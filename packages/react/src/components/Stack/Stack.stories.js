@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,16 +25,6 @@ export default {
   },
 };
 
-export const Default = () => {
-  return (
-    <Stack gap={6}>
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </Stack>
-  );
-};
-
 export const Horizontal = () => {
   return (
     <Stack gap={6} orientation="horizontal">
@@ -45,7 +35,7 @@ export const Horizontal = () => {
   );
 };
 
-export const Playground = (args) => {
+export const Default = (args) => {
   return (
     <Stack {...args}>
       <div>Item 1</div>
@@ -55,12 +45,15 @@ export const Playground = (args) => {
   );
 };
 
-Playground.argTypes = {
+Default.args = {
+  as: 'div',
+};
+
+Default.argTypes = {
   as: {
     control: {
       type: 'text',
     },
-    defaultValue: 'div',
   },
   gap: {
     options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],

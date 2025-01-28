@@ -5,24 +5,32 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { action } from '@storybook/addon-actions';
 import {
+  Add,
   Apple,
   Fish,
   Strawberry,
-  SubtractAlt,
+  Close,
   Wheat,
 } from '@carbon/icons-react';
-import { VStack } from '../Stack';
+
+import { WithLayer } from '../../../.storybook/templates/WithLayer';
+
 import Button from '../Button';
-import ExpandableSearch from '../ExpandableSearch';
-import { Layer } from '../Layer';
+import Search from '../Search';
+import OverflowMenu from '../OverflowMenu';
+import OverflowMenuItem from '../OverflowMenuItem';
 import Tag from '../Tag';
+
+import { usePrefix } from '../../internal/usePrefix';
+
 import mdx from './ContainedList.mdx';
 
 import ContainedList, { ContainedListItem } from '.';
+import ExpandableSearch from '../ExpandableSearch';
 
 export default {
   title: 'Components/ContainedList',
@@ -52,22 +60,25 @@ export default {
   },
 };
 
-export const Default = () => (
+const DefaultStory = (args) => (
   <>
-    <ContainedList label="List title" kind="on-page">
-      <ContainedListItem>List item</ContainedListItem>
-      <ContainedListItem>List item</ContainedListItem>
-      <ContainedListItem>List item</ContainedListItem>
-      <ContainedListItem>List item</ContainedListItem>
-    </ContainedList>
-    <ContainedList label="List title" kind="on-page">
-      <ContainedListItem>List item</ContainedListItem>
-      <ContainedListItem>List item</ContainedListItem>
-      <ContainedListItem>List item</ContainedListItem>
-      <ContainedListItem>List item</ContainedListItem>
-    </ContainedList>
+    {[...Array(4)].map((_, i) => (
+      <ContainedList key={i} {...args}>
+        {[...Array(8)].map((_, j) => (
+          <ContainedListItem key={`${i}-${j}`}>List item</ContainedListItem>
+        ))}
+      </ContainedList>
+    ))}
   </>
 );
+
+export const Default = DefaultStory.bind({});
+
+Default.args = {
+  label: 'List title',
+  kind: 'on-page',
+  size: 'lg',
+};
 
 export const Disclosed = () => (
   <>
@@ -90,16 +101,14 @@ export const WithInteractiveItems = () => {
   const onClick = action('onClick (ContainedListItem)');
 
   return (
-    <VStack gap={12}>
-      <ContainedList label="List title" kind="on-page">
-        <ContainedListItem onClick={onClick}>List item</ContainedListItem>
-        <ContainedListItem onClick={onClick} disabled>
-          List item
-        </ContainedListItem>
-        <ContainedListItem onClick={onClick}>List item</ContainedListItem>
-        <ContainedListItem onClick={onClick}>List item</ContainedListItem>
-      </ContainedList>
-    </VStack>
+    <ContainedList label="List title" kind="on-page">
+      <ContainedListItem onClick={onClick}>List item</ContainedListItem>
+      <ContainedListItem onClick={onClick} disabled>
+        List item
+      </ContainedListItem>
+      <ContainedListItem onClick={onClick}>List item</ContainedListItem>
+      <ContainedListItem onClick={onClick}>List item</ContainedListItem>
+    </ContainedList>
   );
 };
 
@@ -109,24 +118,100 @@ export const WithActions = () => {
       kind="ghost"
       iconDescription="Dismiss"
       hasIconOnly
-      renderIcon={SubtractAlt}
+      renderIcon={Close}
+      aria-label="Dismiss"
     />
   );
 
   return (
-    <VStack gap={12}>
-      <ContainedList
-        label="List title"
-        kind="on-page"
-        action={<ExpandableSearch placeholder="Find item" size="lg" />}>
-        <ContainedListItem action={itemAction}>List item</ContainedListItem>
-        <ContainedListItem action={itemAction} disabled>
-          List item
-        </ContainedListItem>
-        <ContainedListItem action={itemAction}>List item</ContainedListItem>
-        <ContainedListItem action={itemAction}>List item</ContainedListItem>
-      </ContainedList>
-    </VStack>
+    <ContainedList label="List title" kind="on-page" action={''}>
+      <ContainedListItem action={itemAction}>List item</ContainedListItem>
+      <ContainedListItem action={itemAction} disabled>
+        List item
+      </ContainedListItem>
+      <ContainedListItem action={itemAction}>List item</ContainedListItem>
+      <ContainedListItem action={itemAction}>List item</ContainedListItem>
+    </ContainedList>
+  );
+};
+
+export const WithExpandableSearch = () => {
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchResults, setSearchResults] = React.useState([]);
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  React.useEffect(() => {
+    const listItems = [
+      'List item 1',
+      'List item 2',
+      'List item 3',
+      'List item 4',
+    ];
+
+    const results = listItems.filter((listItem) =>
+      listItem.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setSearchResults(results);
+  }, [searchTerm]);
+
+  return (
+    <ContainedList
+      label="List title"
+      kind="on-page"
+      action={
+        <ExpandableSearch
+          placeholder="Filter"
+          labelText="Search"
+          value={searchTerm}
+          onChange={handleChange}
+          closeButtonLabelText="Clear search input"
+          size="lg"
+        />
+      }>
+      {searchResults.map((listItem, key) => (
+        <ContainedListItem key={key}>{listItem}</ContainedListItem>
+      ))}
+    </ContainedList>
+  );
+};
+
+export const WithPersistentSearch = () => {
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchResults, setSearchResults] = React.useState([]);
+  const handleChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  React.useEffect(() => {
+    const listItems = [
+      'List item 1',
+      'List item 2',
+      'List item 3',
+      'List item 4',
+    ];
+
+    const results = listItems.filter((listItem) =>
+      listItem.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setSearchResults(results);
+  }, [searchTerm]);
+
+  return (
+    <ContainedList label="List title" kind="on-page" action={''}>
+      <Search
+        placeholder="Filter"
+        value={searchTerm}
+        onChange={handleChange}
+        closeButtonLabelText="Clear search input"
+        size="lg"
+        labelText="Filter search"
+      />
+      {searchResults.map((listItem, key) => (
+        <ContainedListItem key={key}>{listItem}</ContainedListItem>
+      ))}
+    </ContainedList>
   );
 };
 
@@ -137,117 +222,136 @@ export const WithInteractiveItemsAndActions = () => {
       kind="ghost"
       iconDescription="Dismiss"
       hasIconOnly
-      renderIcon={SubtractAlt}
+      renderIcon={Close}
+      aria-label="Dismiss"
     />
   );
 
   return (
-    <VStack gap={12}>
-      <ContainedList
-        label="List title"
-        kind="on-page"
-        action={<ExpandableSearch placeholder="Find item" size="lg" />}>
-        <ContainedListItem action={itemAction} onClick={onClick}>
-          List item
-        </ContainedListItem>
-        <ContainedListItem action={itemAction} onClick={onClick}>
-          List item
-        </ContainedListItem>
-        <ContainedListItem action={itemAction} onClick={onClick}>
-          List item
-        </ContainedListItem>
-        <ContainedListItem action={itemAction} onClick={onClick}>
-          List item
-        </ContainedListItem>
-      </ContainedList>
-    </VStack>
+    <ContainedList label="List title" kind="on-page" action={''}>
+      <ContainedListItem action={itemAction} onClick={onClick}>
+        List item
+      </ContainedListItem>
+      <ContainedListItem action={itemAction} onClick={onClick}>
+        List item
+      </ContainedListItem>
+      <ContainedListItem action={itemAction} onClick={onClick}>
+        List item
+      </ContainedListItem>
+      <ContainedListItem action={itemAction} onClick={onClick}>
+        List item
+      </ContainedListItem>
+    </ContainedList>
   );
 };
 
-export const WithListTitleDecorators = () => {
-  return (
-    <VStack gap={12}>
-      <ContainedList
-        label={
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <span>List title</span>
-            <Tag size="sm">4</Tag>
-          </div>
-        }
-        kind="on-page">
-        <ContainedListItem>List item</ContainedListItem>
-        <ContainedListItem>List item</ContainedListItem>
-        <ContainedListItem>List item</ContainedListItem>
-        <ContainedListItem>List item</ContainedListItem>
-      </ContainedList>
-    </VStack>
-  );
-};
-
-export const WithIcons = () => {
-  return (
-    <VStack gap={12}>
-      <ContainedList label="List title" kind="on-page">
-        <ContainedListItem renderIcon={Apple}>List item</ContainedListItem>
-        <ContainedListItem renderIcon={Wheat}>List item</ContainedListItem>
-        <ContainedListItem renderIcon={Strawberry}>List item</ContainedListItem>
-        <ContainedListItem renderIcon={Fish}>List item</ContainedListItem>
-      </ContainedList>
-    </VStack>
-  );
-};
-
-export const WithLayer = () => {
-  return (
-    <VStack gap={12}>
-      <VStack gap={5}>
-        <ContainedList label="List title" kind="on-page">
-          <ContainedListItem>List item</ContainedListItem>
-          <ContainedListItem>List item</ContainedListItem>
-        </ContainedList>
-        <Layer>
-          <VStack gap={5}>
-            <ContainedList label="List title" kind="on-page">
-              <ContainedListItem>List item</ContainedListItem>
-              <ContainedListItem>List item</ContainedListItem>
-            </ContainedList>
-            <Layer>
-              <ContainedList label="List title" kind="on-page">
-                <ContainedListItem>List item</ContainedListItem>
-                <ContainedListItem>List item</ContainedListItem>
-              </ContainedList>
-            </Layer>
-          </VStack>
-        </Layer>
-      </VStack>
-    </VStack>
-  );
-};
-
-const PlaygroundStory = (args) => (
-  <>
-    {[...Array(4)].map((_, i) => (
-      <ContainedList key={i} {...args}>
-        {[...Array(8)].map((_, j) => (
-          <ContainedListItem key={`${i}-${j}`}>List item</ContainedListItem>
-        ))}
-      </ContainedList>
-    ))}
-  </>
+export const WithListTitleDecorators = () => (
+  <ContainedList
+    label={
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+        <span>List title</span>
+        <Tag size="sm" role="status" aria-label="4 items in list">
+          4
+        </Tag>
+      </div>
+    }
+    kind="on-page">
+    <ContainedListItem>List item</ContainedListItem>
+    <ContainedListItem>List item</ContainedListItem>
+    <ContainedListItem>List item</ContainedListItem>
+    <ContainedListItem>List item</ContainedListItem>
+  </ContainedList>
 );
 
-export const Playground = PlaygroundStory.bind({});
+export const WithIcons = () => (
+  <ContainedList label="List title" kind="on-page">
+    <ContainedListItem renderIcon={Apple}>List item</ContainedListItem>
+    <ContainedListItem renderIcon={Wheat}>List item</ContainedListItem>
+    <ContainedListItem renderIcon={Strawberry}>List item</ContainedListItem>
+    <ContainedListItem renderIcon={Fish}>List item</ContainedListItem>
+  </ContainedList>
+);
 
-Playground.argTypes = {
-  label: {
-    defaultValue: 'List title',
-  },
-  kind: {
-    defaultValue: 'on-page',
-  },
+export const _WithLayer = () => (
+  <WithLayer>
+    <ContainedList label="List title" kind="on-page">
+      <ContainedListItem>List item</ContainedListItem>
+      <ContainedListItem>List item</ContainedListItem>
+    </ContainedList>
+  </WithLayer>
+);
+
+export const UsageExamples = () => {
+  const prefix = usePrefix();
+
+  return (
+    <>
+      <ContainedList
+        label="List title"
+        action={
+          <Button
+            hasIconOnly
+            iconDescription="Add"
+            renderIcon={Add}
+            tooltipPosition="left"
+          />
+        }>
+        {[...Array(3)].map((_, i) => (
+          <ContainedListItem
+            key={i}
+            action={
+              <OverflowMenu flipped size="lg" ariaLabel="List item options">
+                <OverflowMenuItem itemText="View details" />
+                <OverflowMenuItem itemText="Edit" />
+                <OverflowMenuItem itemText="Remove" isDelete hasDivider />
+              </OverflowMenu>
+            }>
+            List item
+          </ContainedListItem>
+        ))}
+      </ContainedList>
+      <ContainedList
+        label="List title"
+        action={
+          <Button
+            hasIconOnly
+            iconDescription="Add"
+            renderIcon={Add}
+            tooltipPosition="left"
+            kind="ghost"
+          />
+        }>
+        {[...Array(3)].map((_, i) => (
+          <ContainedListItem key={i}>
+            List item
+            <br />
+            <span className={`${prefix}--label ${prefix}--label--no-margin`}>
+              Description text
+            </span>
+          </ContainedListItem>
+        ))}
+      </ContainedList>
+      <ContainedList label="List title">
+        {[...Array(3)].map((_, i) => (
+          <ContainedListItem key={i}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                columnGap: '1rem',
+              }}>
+              <span>List item</span>
+              <span>List item details</span>
+              <span>List item details</span>
+            </div>
+          </ContainedListItem>
+        ))}
+      </ContainedList>
+    </>
+  );
 };

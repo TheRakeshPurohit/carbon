@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2018, 2018
+// Copyright IBM Corp. 2018, 2023
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -99,8 +99,18 @@
     border: 0;
     margin: 0;
     font: inherit;
+    font-feature-settings: 'liga' 1;
     font-size: 100%;
     vertical-align: baseline;
+  }
+
+  // Chrome 62 fix
+  button,
+  select,
+  input,
+  textarea {
+    border-radius: 0;
+    font-family: inherit;
   }
 
   /* HTML5 display-role reset for older browsers */
@@ -141,8 +151,6 @@
   blockquote::after,
   q::before,
   q::after {
-    content: '';
-    // stylelint-disable-next-line declaration-block-no-duplicate-properties
     content: none;
   }
 

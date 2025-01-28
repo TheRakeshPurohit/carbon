@@ -12,40 +12,60 @@
 @use '../../motion' as *;
 @use '../../spacing' as *;
 @use '../../theme' as *;
-@use '../../utilities/convert' as *;
+@use '../../utilities/convert';
 @use '../../utilities/focus-outline' as *;
 @use '../select';
 
 @mixin fluid-select {
   .#{$prefix}--select--fluid .#{$prefix}--select {
     position: relative;
-    height: 100%;
     background: $field;
-    transition: background-color $duration-fast-01 motion(standard, productive),
+    block-size: 100%;
+    transition:
+      background-color $duration-fast-01 motion(standard, productive),
       outline $duration-fast-01 motion(standard, productive);
   }
 
   .#{$prefix}--select--fluid .#{$prefix}--label {
     position: absolute;
     z-index: 1;
-    top: rem(13px);
-    left: $spacing-05;
     display: flex;
-    height: rem(16px);
     align-items: center;
     margin: 0;
+    block-size: convert.to-rem(16px);
+    inline-size: calc(100% - 2rem);
+    inset-block-start: convert.to-rem(13px);
+    inset-inline-start: $spacing-05;
+  }
+
+  .#{$prefix}--select--fluid .#{$prefix}--label::-webkit-scrollbar,
+  .#{$prefix}--select--fluid
+    .#{$prefix}--label
+    .#{$prefix}--toggletip-label::-webkit-scrollbar {
+    display: none;
+  }
+
+  .#{$prefix}--select--fluid
+    .#{$prefix}--label:not(:has(.#{$prefix}--toggletip-label)),
+  .#{$prefix}--select--fluid .#{$prefix}--label .#{$prefix}--toggletip-label {
+    -ms-overflow-style: none;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    white-space: nowrap;
   }
 
   .#{$prefix}--select--fluid .#{$prefix}--select-input {
-    min-height: rem(64px);
-    padding: rem(32px) $spacing-05 rem(13px);
+    padding: convert.to-rem(32px) convert.to-rem(32px) convert.to-rem(13px)
+      $spacing-05;
+    min-block-size: convert.to-rem(64px);
     outline: none;
+    text-overflow: ellipsis;
   }
 
   .#{$prefix}--select--fluid .#{$prefix}--select__arrow {
-    top: auto;
-    bottom: 1rem;
-    height: 1rem;
+    block-size: 1rem;
+    inset-block-start: convert.to-rem(34px);
+    inset-inline-end: $spacing-04;
   }
 
   .#{$prefix}--select--fluid .#{$prefix}--select__divider {
@@ -54,10 +74,10 @@
   }
 
   // Invalid + Warn states
-  .#{$prefix}--select--fluid .#{$prefix}--select--invalid {
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--invalid
+    .#{$prefix}--select-input__wrapper {
     @include focus-outline('invalid');
-
-    outline-offset: 0;
   }
 
   .#{$prefix}--select--fluid
@@ -67,10 +87,10 @@
     .#{$prefix}--select--warning
     .#{$prefix}--select__divider {
     display: block;
-    width: calc(100% - 2rem);
     border: none;
-    border-bottom: 1px solid $border-subtle;
     margin: 0 1rem;
+    border-block-end: 1px solid $border-subtle;
+    inline-size: calc(100% - 2rem);
   }
 
   .#{$prefix}--select--fluid
@@ -79,11 +99,16 @@
   .#{$prefix}--select--fluid
     .#{$prefix}--select--warning
     .#{$prefix}--select-input {
-    border-bottom: 1px solid transparent;
+    border-block-end: 1px solid transparent;
+    padding-inline-end: convert.to-rem(32px);
   }
 
   .#{$prefix}--select--fluid .#{$prefix}--select--warning {
-    border-bottom: 1px solid $border-strong;
+    border-block-end: 1px solid $border-strong;
+  }
+
+  .#{$prefix}--select--fluid .#{$prefix}--select-input__wrapper {
+    display: block;
   }
 
   .#{$prefix}--select--fluid
@@ -95,8 +120,25 @@
     outline: none;
   }
 
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select-input__wrapper[data-invalid]
+    .#{$prefix}--form-requirement,
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--warning
+    .#{$prefix}--form-requirement {
+    display: block;
+    overflow: visible;
+    max-block-size: 100%;
+  }
+
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select-input__wrapper[data-invalid]
+    .#{$prefix}--form-requirement {
+    color: $text-error;
+  }
+
   .#{$prefix}--select--fluid .#{$prefix}--form-requirement {
-    padding: $spacing-03 rem(40px) $spacing-03 $spacing-05;
+    padding: $spacing-03 convert.to-rem(40px) $spacing-03 $spacing-05;
     margin: 0;
   }
 
@@ -112,20 +154,22 @@
 
   .#{$prefix}--select--fluid
     .#{$prefix}--select--invalid
+    .#{$prefix}--select-input__wrapper[data-invalid]
     .#{$prefix}--select__invalid-icon,
   .#{$prefix}--select--fluid
     .#{$prefix}--select--warning
+    .#{$prefix}--select-input__wrapper
     .#{$prefix}--select__invalid-icon {
-    top: rem(73px);
-    right: $spacing-05;
+    inset-block-start: convert.to-rem(73px);
+    inset-inline-end: $spacing-05;
     pointer-events: none;
   }
 
   // Focus styles
-  .#{$prefix}--select--fluid .#{$prefix}--select--fluid--focus {
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--fluid--focus
+    .#{$prefix}--select-input__wrapper {
     @include focus-outline('outline');
-
-    outline-offset: 0;
   }
 
   .#{$prefix}--select--fluid
@@ -133,7 +177,7 @@
     .#{$prefix}--select-input,
   .#{$prefix}--select--fluid
     .#{$prefix}--select--fluid--focus.#{$prefix}--select--warning {
-    border-bottom: 1px solid transparent;
+    border-block-end: 1px solid transparent;
   }
 
   // Disabled state
@@ -154,5 +198,32 @@
     .#{$prefix}--toggletip-button
     svg {
     fill: $icon-disabled;
+  }
+
+  // AILabel styles
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--decorator
+    .#{$prefix}--select__inner-wrapper--decorator
+    > *,
+  .#{$prefix}--select--fluid .#{$prefix}--select--slug .#{$prefix}--ai-label,
+  .#{$prefix}--select--fluid .#{$prefix}--select--slug .#{$prefix}--slug {
+    inset-block-start: convert.to-rem(42px);
+    inset-inline-end: $spacing-09;
+  }
+
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--slug
+    .#{$prefix}--select-input {
+    padding-inline-end: $spacing-10;
+  }
+
+  // remove ai-label divider when element is invalid and fluid
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--slug:has(.#{$prefix}--select__invalid-icon)
+    .#{$prefix}--ai-label::before,
+  .#{$prefix}--select--fluid
+    .#{$prefix}--select--slug:has(.#{$prefix}--select__invalid-icon)
+    .#{$prefix}--slug::before {
+    display: none;
   }
 }

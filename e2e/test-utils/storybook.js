@@ -1,19 +1,29 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 const { snapshot } = require('./snapshot');
+const { expect } = require('@playwright/test');
 
 async function visitStory(page, options) {
-  const { component, story, id, globals } = options;
+  const { component, story, id, globals, args } = options;
   let url = getStoryUrl({
     component,
     story,
     id,
   });
+
+  if (args) {
+    const values = Object.entries(args)
+      .map(([key, value]) => {
+        return `${key}:${value}`;
+      })
+      .join(';');
+    url = url + `&args=${values}`;
+  }
 
   if (globals) {
     const values = Object.entries(globals)
@@ -25,6 +35,12 @@ async function visitStory(page, options) {
   }
 
   await page.goto(url);
+  await expect(page).toContainAStory(options);
+
+  // Ensure Plex assets are fully available for accurate VRT
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
 }
 
 function getStoryUrl({ component, story, id }) {

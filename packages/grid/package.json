@@ -1,7 +1,7 @@
 {
   "name": "@carbon/grid",
   "description": "Grid for digital and software products using the Carbon Design System",
-  "version": "11.7.0",
+  "version": "11.30.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -12,7 +12,8 @@
   "files": [
     "css",
     "scss",
-    "index.scss"
+    "index.scss",
+    "telemetry.yml"
   ],
   "keywords": [
     "eyeglass-module",
@@ -25,18 +26,21 @@
     "react"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "build": "yarn clean && carbon-cli inline && carbon-cli check \"scss/*.scss\"",
-    "clean": "rimraf scss/_inlined scss/vendor"
+    "clean": "rimraf scss/_inlined scss/vendor",
+    "postinstall": "ibmtelemetry --config=telemetry.yml"
   },
   "dependencies": {
-    "@carbon/layout": "^11.7.0"
+    "@carbon/layout": "^11.28.0",
+    "@ibm/telemetry-js": "^1.5.0"
   },
   "devDependencies": {
-    "@carbon/cli": "^11.5.0",
-    "rimraf": "^3.0.0"
+    "@carbon/cli": "^11.23.0",
+    "rimraf": "^6.0.0"
   },
   "eyeglass": {
     "exports": false,

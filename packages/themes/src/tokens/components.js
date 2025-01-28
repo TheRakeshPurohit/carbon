@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2018, 2018
+ * Copyright IBM Corp. 2018, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,11 +74,35 @@ export const tag = TokenGroup.create({
     'tag-background-gray',
     'tag-color-gray',
     'tag-hover-gray',
+    'tag-border-red',
+    'tag-border-blue',
+    'tag-border-cyan',
+    'tag-border-teal',
+    'tag-border-green',
+    'tag-border-magenta',
+    'tag-border-purple',
+    'tag-border-gray',
+    'tag-border-cool-gray',
+    'tag-border-warm-gray',
     'tag-background-cool-gray',
     'tag-color-cool-gray',
     'tag-hover-cool-gray',
     'tag-background-warm-gray',
     'tag-color-warm-gray',
     'tag-hover-warm-gray',
+  ],
+});
+
+export const status = TokenGroup.create({
+  name: 'Status',
+  properties: [],
+  tokens: [
+    'status-red',
+    'status-orange',
+    'status-yellow',
+    'status-purple',
+    'status-green',
+    'status-blue',
+    'status-gray',
   ],
 });

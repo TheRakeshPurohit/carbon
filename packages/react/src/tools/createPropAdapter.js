@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,5 +40,28 @@ function createPropAdapter(spec) {
  * @see https://github.com/downshift-js/downshift/releases/tag/v3.0.0
  */
 const mapDownshiftProps = createPropAdapter([[/^default/g, 'initial']]);
+
+export function mapPopoverAlignProp(align) {
+  switch (align) {
+    case 'top-left':
+      return 'top-start';
+    case 'top-right':
+      return 'top-end';
+    case 'bottom-left':
+      return 'bottom-start';
+    case 'bottom-right':
+      return 'bottom-end';
+    case 'left-bottom':
+      return 'left-end';
+    case 'left-top':
+      return 'left-start';
+    case 'right-bottom':
+      return 'right-end';
+    case 'right-top':
+      return 'right-start';
+    default:
+      return align;
+  }
+}
 
 export { mapDownshiftProps };

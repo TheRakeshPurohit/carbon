@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -61,16 +61,20 @@ export const Default = () => {
   );
 };
 
-export const CustomLevel = () => {
+export const CustomLevel = (args) => {
   function TestComponent() {
     return <div className="example-layer-test-component">Test component</div>;
   }
 
   return (
-    <Layer level={2}>
+    <Layer level={2} {...args}>
       <TestComponent />
     </Layer>
   );
+};
+
+CustomLevel.args = {
+  level: 2,
 };
 
 export const UseLayer = () => {
@@ -96,17 +100,3 @@ export const UseLayer = () => {
 UseLayer.story = {
   name: 'useLayer',
 };
-
-const PlaygroundStory = (args) => {
-  function TestComponent() {
-    return <div className="example-layer-test-component">Test component</div>;
-  }
-
-  return (
-    <Layer {...args}>
-      <TestComponent />
-    </Layer>
-  );
-};
-
-export const Playground = PlaygroundStory.bind({});

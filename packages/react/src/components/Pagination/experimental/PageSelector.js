@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2020
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,24 +8,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import setupGetInstanceId from '../../../tools/setupGetInstanceId';
+import { useId } from '../../../internal/useId';
 import Select from '../../Select';
 import SelectItem from '../../SelectItem';
 import { usePrefix } from '../../../internal/usePrefix';
 
-const getInstanceId = setupGetInstanceId();
-
 function PageSelector({
-  className,
+  className = null,
   currentPage,
-  id,
-  labelText,
+  id = 1,
+  labelText = 'Current page number',
   totalPages,
   ...other
 }) {
   const prefix = usePrefix();
   const namespace = `${prefix}--unstable-pagination__page-selector`;
-  const instanceId = `${namespace}__select-${getInstanceId()}`;
+  const instanceId = `${namespace}__select-${useId()}`;
 
   const renderPages = (total) => {
     const pages = [];
@@ -69,12 +67,6 @@ PageSelector.propTypes = {
    * This value is calculated using a valid `totalItems` prop passed to the parent `Unstable_Pagination`.
    */
   totalPages: PropTypes.number.isRequired,
-};
-
-PageSelector.defaultProps = {
-  className: null,
-  id: 1,
-  labelText: 'Current page number',
 };
 
 export default PageSelector;

@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { cleanup, render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { usePrefix, PrefixContext } from '../usePrefix';
 
 describe('usePrefix', () => {
-  afterEach(cleanup);
-
   it('should emit the default prefix without context', () => {
     let value = null;
 
@@ -26,15 +24,16 @@ describe('usePrefix', () => {
 
   it('should emit the prefix in context', () => {
     function TestComponent() {
-      return <span data-testid="test">test</span>;
+      const contextValue = usePrefix();
+      return <span data-testid="test">{contextValue}</span>;
     }
 
-    const { getByTestId } = render(
+    render(
       <PrefixContext.Provider value="test">
         <TestComponent />
       </PrefixContext.Provider>
     );
 
-    expect(getByTestId('test')).toHaveTextContent('test');
+    expect(screen.getByTestId('test')).toHaveTextContent('test');
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2020, 2020
+ * Copyright IBM Corp. 2020, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,7 @@ async function run() {
   const token = core.getInput('GITHUB_TOKEN', {
     required: true,
   });
-  const octokit = new github.GitHub(token);
+  const octokit = new github.getOctokit(token);
   const { issue } = context.payload;
 
   if (issue.pull_request) {

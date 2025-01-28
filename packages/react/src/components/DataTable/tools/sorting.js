@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,6 +20,10 @@ import { sortStates } from '../state/sortStates';
  * @returns {number}
  */
 export const compare = (a, b, locale = 'en') => {
+  // prevent multiple null values in one column (sorting breaks)
+  a === null ? (a = '') : null;
+  b === null ? (b = '') : null;
+
   if (typeof a === 'number' && typeof b === 'number') {
     return a - b;
   }
@@ -31,8 +35,8 @@ export const compare = (a, b, locale = 'en') => {
   // if column has React elements, this should sort by the child string if there is one
   if (typeof a === 'object' && typeof b === 'object') {
     if (
-      typeof a.props.children === 'string' &&
-      typeof b.props.children === 'string'
+      typeof a.props?.children === 'string' &&
+      typeof b.props?.children === 'string'
     ) {
       return compareStrings(a.props.children, b.props.children, locale);
     }
@@ -53,7 +57,12 @@ export const compare = (a, b, locale = 'en') => {
 export const compareStrings = (a, b, locale = 'en') => {
   // Only set `numeric: true` if the string only contains numbers
   // https://stackoverflow.com/a/175787
-  if (!isNaN(a) && !isNaN(parseFloat(a))) {
+  if (
+    !isNaN(a) &&
+    !isNaN(parseFloat(a)) &&
+    !isNaN(b) &&
+    !isNaN(parseFloat(b))
+  ) {
     return a.localeCompare(b, locale, { numeric: true });
   }
 
@@ -84,8 +93,8 @@ export const sortRows = ({
   cellsById,
   sortDirection,
   key,
-  locale,
-  sortRow,
+  locale = 'en',
+  sortRow = defaultSortRow,
 }) =>
   rowIds.slice().sort((a, b) => {
     const cellA = cellsById[getCellId(a, key)];
@@ -96,6 +105,7 @@ export const sortRows = ({
       locale,
       sortStates,
       compare,
+      rowIds: [a, b],
     });
   });
 

@@ -1,5 +1,5 @@
 /**
- * Copyright IBM Corp. 2016, 2018
+ * Copyright IBM Corp. 2016, 2023
  *
  * This source code is licensed under the Apache-2.0 license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,9 @@ import { Add } from '@carbon/icons-react';
 import { default as Button, ButtonSkeleton } from '../Button';
 import ButtonSet from '../ButtonSet';
 import mdx from './Button.mdx';
+import './button-story.scss';
+import { composeStories } from '@storybook/react';
+import * as stories from '../Breadcrumb/Breadcrumb.stories';
 
 export default {
   title: 'Components/Button',
@@ -127,10 +130,12 @@ export const SetOfButtons = (args) => {
   );
 };
 
-export const Skeleton = () => (
-  <div>
-    <ButtonSkeleton />
-    &nbsp;
-    <ButtonSkeleton size="sm" />
-  </div>
-);
+export const Skeleton = () => {
+  return (
+    <div>
+      <ButtonSkeleton />
+      &nbsp;
+      <ButtonSkeleton size="sm" />
+    </div>
+  );
+};
